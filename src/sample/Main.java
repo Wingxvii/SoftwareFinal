@@ -10,8 +10,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -19,9 +17,7 @@ import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class Main extends Application {
@@ -42,7 +38,8 @@ public class Main extends Application {
     ScrollPane chatLog = new ScrollPane(chatList);
     //file transfer button
     Button imageButton = new Button("File..");
-
+    //menu
+    MenuBar menubar = new MenuBar();
 
     Scene masterScene = new Scene(masterPane);
 
@@ -50,6 +47,16 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
 
         self = new UserItem("SelfUserName", "Online");
+
+        //Menu
+        Menu menuFile = new Menu("File");
+
+        MenuItem menuSave = new MenuItem("Save");
+        MenuItem menuExit = new MenuItem("Exit");
+
+        menuFile.getItems().addAll(menuSave,menuExit );
+        menubar.getMenus().addAll(menuFile);
+
 
         //setup format
         textInput.setMinSize(750,50);
@@ -105,12 +112,61 @@ public class Main extends Application {
             }
         });
 
+        //menus
+        menuSave.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) {
+                FileChooser fileChooser = new FileChooser();
+                FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("CSV Files", "*.csv");
+                fileChooser.getExtensionFilters().add(filter);
+
+                File selectedFile = fileChooser.showSaveDialog(null);
+                String fileName = selectedFile.getAbsolutePath();
+
+                FileWriter writer = null;
+
+                try {
+                    writer = new FileWriter(fileName);
+
+                    for (ChatItem chat : items) {
+                        switch (chat.type){
+                            case CHATTEXT:
+                                writer.append(chat.userParent.Username + ",");
+                                writer.append(chat.text);
+
+                                break;
+                            case CHATFILE:
+                                //TODO: EXPORT FILE LINK
+                                break;
+                        }
+
+                        writer.append("\n");
+                    }
+
+                    writer.flush();
+                    writer.close();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+
+            }
+        });
+        menuExit.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) {
+                System.exit(0);
+            }
+        });
+
+
         //add everything
         messageInput.getChildren().addAll(textInput,sendButton,imageButton);
 
         masterPane.setBottom(messageInput);
         masterPane.setLeft(userTable);
         masterPane.setCenter(chatLog);
+        masterPane.setTop(menubar);
 
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         primaryStage.setTitle("Chat");

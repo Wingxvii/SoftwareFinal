@@ -11,6 +11,15 @@ import javafx.scene.text.TextAlignment;
 public class ChatItem {
     UserItem userParent;
     Node nodeItem;
+    ItemType type;
+    String text;
+
+    public enum ItemType{
+        CHATTEXT,
+        CHATFILE,
+
+    }
+
 
     ChatItem(Node nodeItem, UserItem userParent){
         this.nodeItem = nodeItem;
@@ -20,7 +29,8 @@ public class ChatItem {
     public void SetupText(boolean self){
         ((Label)nodeItem).setFont(new Font(18));
         ((Label) nodeItem).setMinWidth(600);
-
+        type = ItemType.CHATTEXT;
+        text = ((Label)nodeItem).getText();
 
         if(self) {
             ((Label)nodeItem).setText(((Label)nodeItem).getText() + " - " + userParent.Username);
@@ -35,6 +45,12 @@ public class ChatItem {
             ((Label) nodeItem).setAlignment(Pos.BASELINE_LEFT);
             ((Label) nodeItem).setTextAlignment(TextAlignment.LEFT);
         }
+    }
+
+    public void SetupFile(boolean self){
+        //TODO: SETUP file download hyperlink
+        type = ItemType.CHATFILE;
+
     }
 
     public Node getNodeItem() {
