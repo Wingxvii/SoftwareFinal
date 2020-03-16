@@ -23,8 +23,13 @@ public class Main extends Application {
 
     boolean connected = false;
 
+    //reference to self user item
     UserItem self;
+
+    //lists of all users
     ArrayList<UserItem> allUsers = new ArrayList<>();
+
+    //list of all chat items
     ArrayList<ChatItem> items = new ArrayList<>();
 
     //master container pane
@@ -106,23 +111,26 @@ public class Main extends Application {
         //save option
         menuSave.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
+                //choose file to save to
                 FileChooser fileChooser = new FileChooser();
                 FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("CSV Files", "*.csv");
                 fileChooser.getExtensionFilters().add(filter);
 
                 File selectedFile = fileChooser.showSaveDialog(null);
                 try{
+                    //open file writer
                     String fileName = selectedFile.getAbsolutePath();
                     FileWriter writer = null;
 
                     try {
                         writer = new FileWriter(fileName);
 
+                        //save each chat item
                         for (ChatItem chat : items) {
                             switch (chat.type){
                                 case CHATTEXT:
-                                    writer.append(chat.userParent.Username + ",");
-                                    writer.append(chat.text);
+                                    writer.append(chat.getUserParent().getUsername() + ",");
+                                    writer.append(chat.getText());
 
                                     break;
                                 case CHATFILE:
@@ -133,18 +141,16 @@ public class Main extends Application {
                             writer.append("\n");
                         }
 
+                        //close writer
                         writer.flush();
                         writer.close();
 
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
-
                 }catch (NullPointerException e){
-
+                    //if user cancels
                 }
-
             }
         });
 
@@ -173,16 +179,17 @@ public class Main extends Application {
 
     }
 
-
     public static void main(String[] args) {
         launch(args);
     }
 
+    //setup login window
     public void SetupLogin(){
-
 
         Label usernameLabel = new Label("Username:");
         Label ipLabel = new Label("IP Address:");
+
+
 
         TextField usernameText = new TextField();
         TextField ipText = new TextField();
@@ -238,8 +245,8 @@ public class Main extends Application {
 
     }
 
+    //TODO: Send message data
     public void SendMessage(String text, UserItem user){
-        //TODO: Send message data
 
     }
 
@@ -263,12 +270,12 @@ public class Main extends Application {
         boolean found = false;
 
         for(UserItem user : allUsers){
-            if(user.Username.matches(username)){
-                user.Status = status;
+            if(user.getUsername().matches(username)){
+                user.setStatus(status);
                 UpdateUserList();
 
                 //call send packet
-                if(user.Username.matches(self.getUsername())){
+                if(user.getUsername().matches(self.getUsername())){
                     SendUserUpdate(self.getUsername(), self.getStatus());
                 }
                 found = true;
@@ -283,12 +290,14 @@ public class Main extends Application {
         }
 
     }
+
     //TODO: Send this for outgoing updates
     public void SendUserUpdate(String username, String status){
 
 
     }
 
+    //updates user list node
     public void UpdateUserList(){
         userTable.getItems().clear();
         for(UserItem user : allUsers){
@@ -296,6 +305,7 @@ public class Main extends Application {
         }
     }
 
+    //enable functionality for connection
     public void enableFunctionality(){
         sendButton.setDisable(false);
         imageButton.setDisable(false);
