@@ -10,12 +10,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class Main extends Application {
@@ -34,6 +40,9 @@ public class Main extends Application {
     //chat pane
     VBox chatList = new VBox();
     ScrollPane chatLog = new ScrollPane(chatList);
+    //file transfer button
+    Button imageButton = new Button("File..");
+
 
     Scene masterScene = new Scene(masterPane);
 
@@ -50,15 +59,17 @@ public class Main extends Application {
         sendButton.setMinSize(100,50);
         sendButton.setFont(new Font(20));
 
+        imageButton.setMinSize(70,50);
+        imageButton.setFont(new Font(14));
+
         chatLog.setFitToHeight(true);
         //auto scroll to bottom
         chatList.heightProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observable, Object oldvalue, Object newValue) {
-                chatLog.setVvalue((Double)newValue );
+                chatLog.setVvalue((Double)newValue);
             }
         });
-
 
         //user table
         TableView userTable = new TableView();
@@ -78,17 +89,24 @@ public class Main extends Application {
         sendButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 ChatItem chat = new ChatItem(new Label(textInput.getText()), self);
-                chat.SetupText();
+                chat.SetupText(true);
                 textInput.clear();
                 items.add(chat);
 
                 chatList.getChildren().add(chat.nodeItem);
+            }
+        });
+
+        imageButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override public void handle(ActionEvent e) {
+                //TODO: setup file database here...
+
 
             }
         });
 
         //add everything
-        messageInput.getChildren().addAll(textInput,sendButton);
+        messageInput.getChildren().addAll(textInput,sendButton,imageButton);
 
         masterPane.setBottom(messageInput);
         masterPane.setLeft(userTable);
