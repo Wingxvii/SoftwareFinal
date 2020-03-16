@@ -65,8 +65,6 @@ public class Main extends Application {
     MenuItem statusActive = new MenuItem("Active");
     MenuItem statusBusy = new MenuItem("Busy");
 
-
-
     @Override
     public void start(Stage primaryStage) throws Exception{
 
@@ -189,8 +187,6 @@ public class Main extends Application {
         Label usernameLabel = new Label("Username:");
         Label ipLabel = new Label("IP Address:");
 
-
-
         TextField usernameText = new TextField();
         TextField ipText = new TextField();
 
@@ -234,15 +230,13 @@ public class Main extends Application {
             }
         });
 
+        //open connection window
         Scene secondScene = new Scene(gridPane, 350, 100);
 
-        // New window (Stage)
         newWindow.setTitle("Connect");
         newWindow.setScene(secondScene);
 
         newWindow.show();
-
-
     }
 
     //TODO: Send message data
