@@ -50,23 +50,21 @@ public class Main extends Application {
     //connect scene
     Stage newWindow = new Stage();
 
+    //Menu
+    Menu menuFile = new Menu("File");
+    Menu statusMenu = new Menu("Status");
+
+    MenuItem menuSave = new MenuItem("Save");
+    MenuItem menuExit = new MenuItem("Exit");
+
+    MenuItem statusActive = new MenuItem("Active");
+    MenuItem statusBusy = new MenuItem("Busy");
+
+
 
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-        //Menu
-        Menu menuFile = new Menu("File");
-        Menu statusMenu = new Menu("Status");
-
-        MenuItem menuSave = new MenuItem("Save");
-        MenuItem menuExit = new MenuItem("Exit");
-
-        MenuItem statusActive = new MenuItem("Active");
-        MenuItem statusBusy = new MenuItem("Busy");
-
-        statusMenu.getItems().addAll(statusActive,statusBusy);
-        menuFile.getItems().addAll(menuSave,menuExit );
-        menubar.getMenus().addAll(menuFile, statusMenu);
 
         //setup format
         textInput.setMinSize(750,50);
@@ -78,6 +76,10 @@ public class Main extends Application {
 
         imageButton.setMinSize(70,50);
         imageButton.setFont(new Font(14));
+
+        sendButton.setDisable(true);
+        imageButton.setDisable(true);
+        textInput.setDisable(true);
 
         chatLog.setFitToHeight(true);
         //auto scroll to bottom
@@ -101,31 +103,7 @@ public class Main extends Application {
         userTable.getItems().add(self);
         userTable.setEditable(false);
 
-        //setup functionality
-        sendButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                if(connected) {
-                    ChatItem chat = new ChatItem(new Label(textInput.getText()), self);
-                    chat.SetupText(true);
-                    textInput.clear();
-                    items.add(chat);
-
-                    chatList.getChildren().add(chat.nodeItem);
-                    //call send packet
-                    SendMessage(textInput.getText(), self);
-                }
-            }
-        });
-
-        imageButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                if(connected) {
-                    //TODO: setup file database here...
-                }
-            }
-        });
-
-        //menus
+        //save option
         menuSave.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
                 FileChooser fileChooser = new FileChooser();
@@ -169,24 +147,14 @@ public class Main extends Application {
 
             }
         });
-        menuExit.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                UserUpdate(self.getUsername(), "Offline");
-                System.exit(0);
-            }
-        });
-        statusActive.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                UserUpdate(self.getUsername(), "Active");
-            }
-        });
-        statusBusy.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-                UserUpdate(self.getUsername(), "Busy");
-            }
-        });
 
         //add everything
+        statusMenu.getItems().addAll(statusActive,statusBusy);
+        menuFile.getItems().addAll(menuSave,menuExit );
+        menubar.getMenus().addAll(menuFile, statusMenu);
+        menuFile.setDisable(true);
+        statusMenu.setDisable(true);
+
         messageInput.getChildren().addAll(textInput,sendButton,imageButton);
 
         masterPane.setBottom(messageInput);
@@ -202,6 +170,7 @@ public class Main extends Application {
 
         //setup the login data
         SetupLogin();
+
     }
 
 
@@ -248,6 +217,7 @@ public class Main extends Application {
                     allUsers.add(self);
                     UpdateUserList();
                     connected = true;
+                    enableFunctionality();
                     newWindow.close();
                 }else{
                     gridPane.add(connectionFailed,2,1 );
@@ -324,6 +294,55 @@ public class Main extends Application {
         for(UserItem user : allUsers){
             userTable.getItems().add(user);
         }
+    }
+
+    public void enableFunctionality(){
+        sendButton.setDisable(false);
+        imageButton.setDisable(false);
+        menuFile.setDisable(false);
+        statusMenu.setDisable(false);
+        textInput.setDisable(false);
+
+        //setup functionality
+        sendButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                if(connected) {
+                    ChatItem chat = new ChatItem(new Label(textInput.getText()), self);
+                    chat.SetupText(true);
+                    textInput.clear();
+                    items.add(chat);
+
+                    chatList.getChildren().add(chat.nodeItem);
+                    //call send packet
+                    SendMessage(textInput.getText(), self);
+                }
+            }
+        });
+
+        imageButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                if(connected) {
+                    //TODO: setup file database here...
+                }
+            }
+        });
+
+        menuExit.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) {
+                UserUpdate(self.getUsername(), "Offline");
+                System.exit(0);
+            }
+        });
+        statusActive.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) {
+                UserUpdate(self.getUsername(), "Active");
+            }
+        });
+        statusBusy.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) {
+                UserUpdate(self.getUsername(), "Busy");
+            }
+        });
 
     }
 
