@@ -171,6 +171,7 @@ public class Main extends Application {
         });
         menuExit.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
+                UserUpdate(self.getUsername(), "Offline");
                 System.exit(0);
             }
         });
