@@ -178,4 +178,26 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+
+    public void SendMessage(String text, UserItem user){
+        //TODO: Send message data
+
+    }
+
+    //TODO: Call this for incomming messages
+    public void RecieveMessage(String text, UserItem user){
+        ChatItem chat = new ChatItem(new Label(text), user);
+        chat.SetupText(false);
+        items.add(chat);
+
+        chatList.getChildren().add(chat.nodeItem);
+    }
+
+    //TODO: Recieve a file hyperlink
+    public void RecieveFile() {}
+
+    //TODO: Send a file hyperlink
+    public void SendFile() {}
+
 }
