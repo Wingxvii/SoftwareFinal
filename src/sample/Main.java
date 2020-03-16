@@ -10,9 +10,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -22,7 +21,10 @@ import java.util.ArrayList;
 
 public class Main extends Application {
 
+    boolean connected = false;
+
     UserItem self;
+    ArrayList<UserItem> allUsers = new ArrayList<>();
     ArrayList<ChatItem> items = new ArrayList<>();
 
     //master container pane
@@ -40,23 +42,31 @@ public class Main extends Application {
     Button imageButton = new Button("File..");
     //menu
     MenuBar menubar = new MenuBar();
+    //user table
+    TableView userTable = new TableView();
 
+    //main scene
     Scene masterScene = new Scene(masterPane);
+    //connect scene
+    Stage newWindow = new Stage();
+
 
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-        self = new UserItem("SelfUserName", "Online");
-
         //Menu
         Menu menuFile = new Menu("File");
+        Menu statusMenu = new Menu("Status");
 
         MenuItem menuSave = new MenuItem("Save");
         MenuItem menuExit = new MenuItem("Exit");
 
-        menuFile.getItems().addAll(menuSave,menuExit );
-        menubar.getMenus().addAll(menuFile);
+        MenuItem statusActive = new MenuItem("Active");
+        MenuItem statusBusy = new MenuItem("Busy");
 
+        statusMenu.getItems().addAll(statusActive,statusBusy);
+        menuFile.getItems().addAll(menuSave,menuExit );
+        menubar.getMenus().addAll(menuFile, statusMenu);
 
         //setup format
         textInput.setMinSize(750,50);
@@ -79,7 +89,6 @@ public class Main extends Application {
         });
 
         //user table
-        TableView userTable = new TableView();
         TableColumn<String,String> usernameDisplay = new TableColumn<>("Username");
         usernameDisplay.setCellValueFactory(new PropertyValueFactory<>("Username"));
         usernameDisplay.setResizable(false);
@@ -95,20 +104,24 @@ public class Main extends Application {
         //setup functionality
         sendButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                ChatItem chat = new ChatItem(new Label(textInput.getText()), self);
-                chat.SetupText(true);
-                textInput.clear();
-                items.add(chat);
+                if(connected) {
+                    ChatItem chat = new ChatItem(new Label(textInput.getText()), self);
+                    chat.SetupText(true);
+                    textInput.clear();
+                    items.add(chat);
 
-                chatList.getChildren().add(chat.nodeItem);
+                    chatList.getChildren().add(chat.nodeItem);
+                    //call send packet
+                    SendMessage(textInput.getText(), self);
+                }
             }
         });
 
         imageButton.setOnAction(new EventHandler<ActionEvent>() {
-                @Override public void handle(ActionEvent e) {
-                //TODO: setup file database here...
-
-
+            @Override public void handle(ActionEvent e) {
+                if(connected) {
+                    //TODO: setup file database here...
+                }
             }
         });
 
@@ -120,36 +133,39 @@ public class Main extends Application {
                 fileChooser.getExtensionFilters().add(filter);
 
                 File selectedFile = fileChooser.showSaveDialog(null);
-                String fileName = selectedFile.getAbsolutePath();
+                try{
+                    String fileName = selectedFile.getAbsolutePath();
+                    FileWriter writer = null;
 
-                FileWriter writer = null;
+                    try {
+                        writer = new FileWriter(fileName);
 
-                try {
-                    writer = new FileWriter(fileName);
+                        for (ChatItem chat : items) {
+                            switch (chat.type){
+                                case CHATTEXT:
+                                    writer.append(chat.userParent.Username + ",");
+                                    writer.append(chat.text);
 
-                    for (ChatItem chat : items) {
-                        switch (chat.type){
-                            case CHATTEXT:
-                                writer.append(chat.userParent.Username + ",");
-                                writer.append(chat.text);
+                                    break;
+                                case CHATFILE:
+                                    //TODO: EXPORT FILE LINK
+                                    break;
+                            }
 
-                                break;
-                            case CHATFILE:
-                                //TODO: EXPORT FILE LINK
-                                break;
+                            writer.append("\n");
                         }
 
-                        writer.append("\n");
+                        writer.flush();
+                        writer.close();
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
 
-                    writer.flush();
-                    writer.close();
 
-                } catch (IOException e) {
-                    e.printStackTrace();
+                }catch (NullPointerException e){
+
                 }
-
-
 
             }
         });
@@ -158,7 +174,16 @@ public class Main extends Application {
                 System.exit(0);
             }
         });
-
+        statusActive.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) {
+                UserUpdate(self.getUsername(), "Active");
+            }
+        });
+        statusBusy.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) {
+                UserUpdate(self.getUsername(), "Busy");
+            }
+        });
 
         //add everything
         messageInput.getChildren().addAll(textInput,sendButton,imageButton);
@@ -172,6 +197,10 @@ public class Main extends Application {
         primaryStage.setTitle("Chat");
         primaryStage.setScene(masterScene);
         primaryStage.show();
+
+
+        //setup the login data
+        SetupLogin();
     }
 
 
@@ -179,6 +208,64 @@ public class Main extends Application {
         launch(args);
     }
 
+    public void SetupLogin(){
+
+
+        Label usernameLabel = new Label("Username:");
+        Label ipLabel = new Label("IP Address:");
+
+        TextField usernameText = new TextField();
+        TextField ipText = new TextField();
+
+        Button confirm = new Button("Confirm");
+
+        GridPane gridPane = new GridPane();
+        gridPane.add(usernameLabel, 0,0);
+        gridPane.add(ipLabel, 0,1);
+        gridPane.add(usernameText, 1,0);
+        gridPane.add(ipText, 1,1);
+        gridPane.add(confirm,2,0);
+
+        Label connectionFailed = new Label("Connection Failed");
+        connectionFailed.setTextFill(Color.RED);
+
+        confirm.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                boolean connection = true;
+                //TODO: check connection
+
+
+                if(connection){
+                    //TODO: setup initial chatroom data
+
+                    if(usernameText.getText().isEmpty()){
+                        usernameText.setText("Nameless");
+
+                    }
+
+                    self = new UserItem(usernameText.getText(), "Active");
+                    allUsers.add(self);
+                    UpdateUserList();
+                    connected = true;
+                    newWindow.close();
+                }else{
+                    gridPane.add(connectionFailed,2,1 );
+
+                }
+
+            }
+        });
+
+        Scene secondScene = new Scene(gridPane, 350, 100);
+
+        // New window (Stage)
+        newWindow.setTitle("Connect");
+        newWindow.setScene(secondScene);
+
+        newWindow.show();
+
+
+    }
 
     public void SendMessage(String text, UserItem user){
         //TODO: Send message data
@@ -199,5 +286,44 @@ public class Main extends Application {
 
     //TODO: Send a file hyperlink
     public void SendFile() {}
+
+    //TODO: Call this for incomming connections
+    public void UserUpdate(String username, String status){
+        boolean found = false;
+
+        for(UserItem user : allUsers){
+            if(user.Username.matches(username)){
+                user.Status = status;
+                UpdateUserList();
+
+                //call send packet
+                if(user.Username.matches(self.getUsername())){
+                    SendUserUpdate(self.getUsername(), self.getStatus());
+                }
+                found = true;
+            }
+        }
+
+        if(!found){
+            UserItem newUser = new UserItem(username, status);
+            allUsers.add(newUser);
+            UpdateUserList();
+
+        }
+
+    }
+    //TODO: Send this for outgoing updates
+    public void SendUserUpdate(String username, String status){
+
+
+    }
+
+    public void UpdateUserList(){
+        userTable.getItems().clear();
+        for(UserItem user : allUsers){
+            userTable.getItems().add(user);
+        }
+
+    }
 
 }
