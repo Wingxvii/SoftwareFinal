@@ -7,11 +7,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -22,21 +19,17 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
-import javax.xml.crypto.Data;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.ServerSocket;
@@ -106,20 +99,22 @@ public class MainProject extends Application {
     ObjectOutputStream out = null;
     //endregion
 
-    //region Menu
-    // Styling
+    //region Style
+    // Styling presets
     String bgStyles =
             "-fx-background-color: rgba(240, 255, 240, 20);";
 
     String btStyles =
             "-fx-border-color: rgba(0, 0, 0, 0);" +
             "-fx-border-width: 1px;" +
-            "-fx-background-color: #7777ff;" + //linear-gradient(#ddddff, #7777ff 50%, #9999ff 60%, #ccccff 100%);" +//, radial-gradient(center 50% 50%, radius 100%, #5555ff 50%, #9999ff 51%);" +
+            //"-fx-border-radius: 10;" +
+            "-fx-background-color: #7777ff;" +
             "-fx-text-fill: rgba(230, 230, 230, 255);" +
             "-fx-font-family: 'Arial';" +
             "-fx-font-weight: BOLD;" +
             "-fx-font-size: 16px;" +
-            "-fx-background-radius: 10;" + "-fx-padding: 10 10 10 10;" //+ "-fx-background-insets: 0,1,2,3,0;"
+            "-fx-background-radius: 10;" +
+            "-fx-padding: 10 10 10 10;"
             ;
 
     String labelStyles =
@@ -150,30 +145,27 @@ public class MainProject extends Application {
         textInput.setStyle(promptStyles);
         textInput.setMinSize(600,50);
         textInput.setPrefSize(600, 50);
-        //textInput.setFont(new Font(12));
         textInput.setPromptText("Send Message...");
         textInput.setWrapText(true);
+        textInput.setDisable(true);
+        textInput.setStyle("-fx-border-radius: 10 10 10 10;");
 
         sendButton.setStyle(btStyles);
         sendButton.setMinSize(100,50);
+        sendButton.setDisable(true);
         Tooltip.install(sendButton, new Tooltip("Send Message"));
-        //sendButton.setFont(new Font(20));
 
         imageButton.setStyle(btStyles);
         imageButton.setMinSize(120,50);
-        Tooltip.install(imageButton, new Tooltip("Send Image File"));
-        //imageButton.setFont(new Font(14));
-
-        sendButton.setDisable(true);
         imageButton.setDisable(true);
-        textInput.setDisable(true);
+        Tooltip.install(imageButton, new Tooltip("Send Image File"));
 
         chatLog.setFitToHeight(true);
         chatLog.setDisable(true);
         //auto scroll to bottom
         chatList.heightProperty().addListener(new ChangeListener() {
             @Override
-            public void changed(ObservableValue observable, Object oldvalue, Object newValue) {
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 chatLog.setVvalue((Double)newValue);
             }
         });
@@ -269,15 +261,12 @@ public class MainProject extends Application {
         masterPane.setStyle(bgStyles);
 
         //Parent root = FXMLLoader.load(getClass().getResource(System.getProperty("user.dir") + "/src/main/resources/FinalProject.fxml"));
-        //System.out.println("Present Project Directory : "+ System.getProperty("user.dir") + "/src/main/resources/FinalProject.fxml");
         primaryStage.setTitle("Chat");
         primaryStage.setScene(masterScene);
         primaryStage.show();
 
-
         //setup the login data
         SetupLogin();
-
     }
 
     public static void main(String[] args) {
@@ -286,23 +275,13 @@ public class MainProject extends Application {
 
     //setup login window
     public void SetupLogin(){
-        HBox connectionGrid = new HBox();
-        connectionGrid.setAlignment(Pos.CENTER);
-
-        GridPane connectionInputs = new GridPane();
-        connectionInputs.setPadding(new Insets(10,10,10,10));
-        connectionInputs.setHgap(5);
-        connectionInputs.setVgap(5);
-
-        GridPane connectBt = new GridPane();
-        connectBt.setPadding(new Insets(10,10,10,10));
-        connectBt.setHgap(5);
-        connectBt.setVgap(5);
-
+        // Setting up the field and text
         Label usernameLabel = new Label("Username:");
         usernameLabel.setStyle(labelStyles);
+
         Label ipLabel = new Label("IP Address:");
         ipLabel.setStyle(labelStyles);
+
         Label connectionFailed = new Label("Connection Failed");
         connectionFailed.setStyle(labelStyles);
         connectionFailed.setVisible(false);
@@ -310,13 +289,7 @@ public class MainProject extends Application {
 
         CheckBox isHostButton = new CheckBox("Host");
         isHostButton.setStyle(labelStyles);
-
-        Button confirmButton = new Button("Connect");
-        //confirmButton.setStyle("-fx-background-color: rgba(0, 0, 255, 100);");
-        confirmButton.setStyle(btStyles);
-        confirmButton.setMinSize(100, 55);
-
-
+        Tooltip.install(isHostButton, new Tooltip("Host the chatroom"));
 
         TextField usernameText = new TextField();
         TextField ipText = new TextField();
@@ -333,7 +306,10 @@ public class MainProject extends Application {
             }
         });
 
-
+        GridPane connectionInputs = new GridPane();
+        connectionInputs.setPadding(new Insets(10,10,10,10));
+        connectionInputs.setHgap(5);
+        connectionInputs.setVgap(5);
         connectionInputs.add(usernameLabel, 0, 0);
         connectionInputs.add(ipLabel, 0,1);
         connectionInputs.add(usernameText, 1,0);
@@ -341,11 +317,10 @@ public class MainProject extends Application {
         connectionInputs.add(isHostButton, 0,2);
         connectionInputs.add(connectionFailed,1,2 );
 
-        connectBt.add(confirmButton, 0, 0);
-
-        connectionGrid.getChildren().addAll(connectionInputs, connectBt);
-
-        confirmButton.setOnAction(new EventHandler<ActionEvent>() {
+        Button connectButton = new Button("Connect");
+        connectButton.setStyle(btStyles);
+        connectButton.setMinSize(100, 55);
+        connectButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
 
                 boolean connection = false;
@@ -374,10 +349,10 @@ public class MainProject extends Application {
                                                 UserUpdate((UserItem) newItem);
                                                 break;
                                             case CHATTEXT:
-                                                RecieveMessage((TextChatItem) newItem);
+                                                ReceiveMessage((TextChatItem) newItem);
                                                 break;
                                             case CHATIMAGE:
-                                                RecieveImage((ImageChatItem) newItem);
+                                                ReceiveImage((ImageChatItem) newItem);
                                                 break;
 
                                             default:
@@ -446,12 +421,21 @@ public class MainProject extends Application {
             }
         });
 
+        GridPane connectGrid = new GridPane();
+        connectGrid.setPadding(new Insets(10,10,10,10));
+        connectGrid.setHgap(5);
+        connectGrid.setVgap(5);
+        connectGrid.add(connectButton, 0, 0);
+
+        HBox connectionGrid = new HBox();
+        connectionGrid.setAlignment(Pos.CENTER);
+        connectionGrid.getChildren().addAll(connectionInputs, connectGrid);
+
         //open connection window
         Scene secondScene = new Scene(connectionGrid, 400, 110);
 
-        newWindow.setTitle("Connect");
+        newWindow.setTitle("Connection");
         newWindow.setScene(secondScene);
-
         newWindow.show();
     }
 
@@ -591,15 +575,15 @@ public class MainProject extends Application {
 
     }
 
-    //process incomming messages
-    public void RecieveMessage(TextChatItem chat){
+    //process incoming messages
+    public void ReceiveMessage(TextChatItem chat){
         items.add(chat);
 
         chatList.getChildren().add(SetupText(chat, false));
     }
 
-    //process incomming images
-    public void RecieveImage(ImageChatItem chat){
+    //process incoming images
+    public void ReceiveImage(ImageChatItem chat){
         items.add(chat);
 
         chatList.getChildren().add(SetupImage(chat, false));
@@ -678,22 +662,13 @@ public class MainProject extends Application {
 
         if(self) {
             returnLabel2.setTextFill(Color.GREEN);
-            //alignment.setRight(returnLabel);
-            //desc.setTextFill(Color.GREEN);
-
-            //desc.setAlignment(Pos.BASELINE_RIGHT);
-            //desc.setTextAlignment(TextAlignment.RIGHT);
-
         }else {
             returnLabel2.setTextFill(Color.BLUE);
-            //desc.setTextFill(Color.BLUE);
         }
 
         alignment.setTop(returnLabel2);
         alignment.setLeft(returnLabel);
         returnLabel2.setTextAlignment(TextAlignment.LEFT);
-        //returnLabel2.setAlignment(Pos.BASELINE_LEFT);
-
 
         return alignment;
     }
@@ -766,10 +741,10 @@ public class MainProject extends Application {
                                 UserUpdate((UserItem) newItem, connection);
                                 break;
                             case CHATTEXT:
-                                RecieveMessage((TextChatItem) newItem);
+                                ReceiveMessage((TextChatItem) newItem);
                                 break;
                             case CHATIMAGE:
-                                RecieveImage((ImageChatItem) newItem);
+                                ReceiveImage((ImageChatItem) newItem);
                                 break;
                             default:
                                 break;
