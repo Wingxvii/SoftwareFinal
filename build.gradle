@@ -1,13 +1,20 @@
+buildscript {
+    repositories{
+        flatDir dirs : 'proguard6.2.2/lib'
+    }
+    dependencies {
+        classpath ':proguard'
+    }
+}
+
 plugins {
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 apply plugin: 'java'
 
-group 'org.example'
-version '1.0-SNAPSHOT'
-
 sourceCompatibility = 1.8
+version = '1.0'
 
 ext {
     javaMainClass = "FinalProject.MainProject"
@@ -21,6 +28,8 @@ repositories {
     mavenCentral()
 }
 
+
+
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
@@ -32,4 +41,18 @@ javafx {
 task execute(type:JavaExec, dependsOn: 'classes'){
     main = 'MainProject'
     classpath = sourceSets.main.runtimeClasspath
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class' : 'FinalProject.MainProject',
+                'Implementation-Title' : 'Main-Project',
+                'Implementation-Version' : version
+    }
+}
+
+task (minify, dependsOn: 'jar', type:proguard.gradle.ProGuardTask) {
+    configuration 'proguard.cfg'
+    injars 'build/libs/Project.jar'
+    outjars 'build/libs/Project.min.jar'
 }

@@ -39,6 +39,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class MainProject extends Application {
+
     //reference to self user item
     UserItem self;
 
@@ -100,9 +101,16 @@ public class MainProject extends Application {
     ObjectOutputStream out = null;
     //endregion
 
+    //region Menu
+    // Styling
+    String styles =
+            "-fx-background-color: #0000ff;" +
+                    "-fx-border-color: #ff0000;" ;
+    //endregion
+
     @Override
     public void start(Stage primaryStage) throws Exception{
-
+        sendButton.setStyle(styles);
         //setup format
         textInput.setMinSize(750,50);
         textInput.setFont(new Font(12));

@@ -1,2 +1,5 @@
 Manifest-Version: 1.0
+Main-Class: FinalProject.MainProject
+Implementation-Title: Main-Project
+Implementation-Version: 1.0
 
