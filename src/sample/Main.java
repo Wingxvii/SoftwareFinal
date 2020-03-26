@@ -23,6 +23,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -385,6 +388,8 @@ public class Main extends Application {
         textInput.setDisable(false);
 
         //setup functionality
+
+        //send button submission
         sendButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 if(connected) {
@@ -398,6 +403,31 @@ public class Main extends Application {
                         Relay(chat);
                     }else {
                         SendData(chat);
+                    }
+                }
+            }
+        });
+
+        //added enter submission
+        textInput.setOnKeyPressed(new EventHandler<KeyEvent>()
+        {
+            @Override
+            public void handle(KeyEvent ke)
+            {
+                if (ke.getCode().equals(KeyCode.ENTER))
+                {
+                    if(connected) {
+                        TextChatItem chat = new TextChatItem(textInput.getText(), self);
+                        textInput.clear();
+                        items.add(chat);
+
+                        chatList.getChildren().add(SetupText(chat, true));
+                        //call send packet
+                        if(isHost){
+                            Relay(chat);
+                        }else {
+                            SendData(chat);
+                        }
                     }
                 }
             }
@@ -457,13 +487,21 @@ public class Main extends Application {
         statusActive.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
                 self.setStatus("Active");
-                UserUpdate(self);
+                if(isHost){
+                    UserUpdate(self,null);
+                }else{
+                    UserUpdate(self);
+                }
             }
         });
         statusBusy.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
                 self.setStatus("Busy");
-                UserUpdate(self);
+                if(isHost){
+                    UserUpdate(self,null);
+                }else{
+                    UserUpdate(self);
+                }
             }
         });
 
@@ -483,30 +521,43 @@ public class Main extends Application {
         chatList.getChildren().add(SetupImage(chat, false));
     }
 
+    //sets up text element to be displayed in chat log
+    public HBox SetupText (TextChatItem item, boolean self){
+        HBox newBox = new HBox();
 
-    public Label SetupText(TextChatItem item, boolean self){
         Label returnLabel = new Label(item.getText());
+        Label returnLabel2 = new Label(item.getUserParent().getUsername());
 
         returnLabel.setFont(new Font(18));
-        returnLabel.setMinWidth(600);
+        returnLabel2.setFont(new Font(23));
+        newBox.setMinWidth(600);
 
         if(self) {
-            returnLabel.setText((returnLabel).getText() + " - " + item.getUserParent().getUsername());
-            returnLabel.setTextFill(Color.GREEN);
-
             returnLabel.setAlignment(Pos.BASELINE_RIGHT);
             returnLabel.setTextAlignment(TextAlignment.RIGHT);
-        }else{
-            returnLabel.setText(item.getUserParent().getUsername() + " - " + returnLabel.getText());
-            returnLabel.setTextFill(Color.BLUE);
+            newBox.setAlignment(Pos.BASELINE_RIGHT);
 
+            returnLabel.setText((returnLabel).getText() + " :");
+            newBox.getChildren().addAll(returnLabel, returnLabel2);
+            returnLabel.setTextFill(Color.GREEN);
+            returnLabel2.setTextFill(Color.GREEN);
+
+        }else{
             returnLabel.setAlignment(Pos.BASELINE_LEFT);
             returnLabel.setTextAlignment(TextAlignment.LEFT);
+            newBox.setAlignment(Pos.BASELINE_LEFT);
+
+            returnLabel.setText(": " + returnLabel.getText());
+            newBox.getChildren().addAll(returnLabel2,returnLabel);
+            returnLabel2.setTextFill(Color.BLUE);
+            returnLabel.setTextFill(Color.BLUE);
+
         }
 
-
-        return returnLabel;
+        return newBox;
     }
+
+    //sets up image to be displayed in chatbox
     public BorderPane SetupImage(ImageChatItem item, boolean self){
         ImageView returnLabel = new ImageView();
         returnLabel.setImage(SwingFXUtils.toFXImage(item.getImage(), null));
@@ -519,6 +570,39 @@ public class Main extends Application {
         desc.setFont(new Font(10));
         desc.setMinWidth(600);
         alignment.setBottom(desc);
+
+        //context menu for image saving
+        ContextMenu menu = new ContextMenu();
+
+        MenuItem save = new MenuItem("Save Image");
+        save.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                //save
+                FileChooser fileChooser = new FileChooser();
+                FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Image Files", "*.png");
+                fileChooser.getExtensionFilters().add(filter);
+
+                File selectedFile = fileChooser.showSaveDialog(null);
+                try {
+                    ImageIO.write(item.getImage(), "png", selectedFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        menu.getItems().addAll(save);
+        returnLabel.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
+
+            @Override
+            public void handle(ContextMenuEvent event) {
+
+                menu.show(returnLabel, event.getScreenX(), event.getScreenY());
+            }
+        });
 
         if(self) {
             alignment.setRight(returnLabel);
@@ -666,7 +750,7 @@ public class Main extends Application {
                 found = true;
             }
         }
-        if(!found){
+        if(!found && connection != null){
             allUsers.add(user);
             UpdateUserList();
             SendInitData(connection);
