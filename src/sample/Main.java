@@ -166,6 +166,12 @@ public class Main extends Application {
                                     writer.append(((TextChatItem)chat).getText());
 
                                     break;
+                                case CHATIMAGE:
+                                    writer.append(chat.getUserParent().getUsername() + ",");
+                                    writer.append(((ImageChatItem)chat).getImageName());
+
+                                    break;
+
                                 default:
                                     break;
                             }
