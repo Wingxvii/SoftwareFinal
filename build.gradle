@@ -1,0 +1,35 @@
+sourceCompatibility = 1.8
+version = '1.0'
+plugins {
+    id "application"
+}
+apply plugin: 'java'
+
+ext{
+    javaMainClass = "SoftwareFinal.Main"
+}
+
+application{
+    mainClassName = javaMainClass
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+task execute(type:JavaExec, dependsOn : 'classes'){
+    main = 'Main'
+    classpath - sourceSets.main.runtimeClasspath
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class' : 'SoftwareFinal.Main',
+                'Implementation-Title' : 'Software-Final',
+                'Implementation-Version' : version
+    }
+}

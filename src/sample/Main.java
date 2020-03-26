@@ -1,7 +1,6 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -172,7 +171,7 @@ public class Main extends Application {
         masterPane.setCenter(chatLog);
         masterPane.setTop(menubar);
 
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("customUI.fxml"));
         primaryStage.setTitle("Chat");
         primaryStage.setScene(masterScene);
         primaryStage.show();
