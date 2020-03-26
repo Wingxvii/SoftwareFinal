@@ -17,6 +17,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class Main extends Application {
@@ -64,6 +65,10 @@ public class Main extends Application {
 
     MenuItem statusActive = new MenuItem("Active");
     MenuItem statusBusy = new MenuItem("Busy");
+
+    // Networking Variables
+    DataInputStream dataIn = null;
+    DataOutputStream dataOut = null;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -206,7 +211,15 @@ public class Main extends Application {
             @Override public void handle(ActionEvent e) {
                 boolean connection = true;
                 //TODO: check connection
+                try {
+                    Socket socket = new Socket(ipText.getText(), 55555);
 
+                    dataIn = new DataInputStream(socket.getInputStream());
+                    dataOut = new DataOutputStream(socket.getOutputStream());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    connection = false;
+                }
 
                 if(connection){
                     //TODO: setup initial chatroom data
@@ -241,7 +254,14 @@ public class Main extends Application {
 
     //TODO: Send message data
     public void SendMessage(String text, UserItem user){
-
+        try {
+            dataOut.writeInt(text.length());
+            //dataOut.writeInt(user.);
+            dataOut.writeBytes(text);
+            //dataOut.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //TODO: Call this for incomming messages

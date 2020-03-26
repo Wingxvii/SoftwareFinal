@@ -8,6 +8,8 @@ public class UserItem {
     //status
     public String Status = "Offline";
 
+    public int index = -1;
+
     //constructor
     public UserItem(String Username, String Status) {
         this.Username = Username;
