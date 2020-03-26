@@ -1,6 +1,6 @@
 Group Members:
 
-John Wang - 100657681 - Wingxvii
+John Wang - Wingxvii
 Contributions: 
 - UI and Menu Functionality and layout
 - P2P socket networking and multithreading
@@ -8,7 +8,7 @@ Contributions:
 - Messager functionality
 - Image/File Input and Output
 
-Victor Zhang - 100421055 - Vzru
+Victor Zhang - Vzru
 Contributions: 
 - UI Look and style
 - Gradle
