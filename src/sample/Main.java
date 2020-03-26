@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -12,7 +13,16 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -20,7 +30,10 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
 import javax.xml.crypto.Data;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -49,7 +62,7 @@ public class Main extends Application {
     VBox chatList = new VBox();
     ScrollPane chatLog = new ScrollPane(chatList);
     //file transfer button
-    Button imageButton = new Button("File..");
+    Button imageButton = new Button("Image..");
     //menu
     MenuBar menubar = new MenuBar();
     //user table
@@ -154,8 +167,7 @@ public class Main extends Application {
                                     writer.append(((TextChatItem)chat).getText());
 
                                     break;
-                                case CHATFILE:
-                                    //TODO: EXPORT FILE LINK
+                                default:
                                     break;
                             }
 
@@ -272,6 +284,10 @@ public class Main extends Application {
                                             case CHATTEXT:
                                                 RecieveMessage((TextChatItem) newItem);
                                                 break;
+                                            case CHATIMAGE:
+                                                RecieveImage((ImageChatItem) newItem);
+                                                break;
+
                                             default:
                                                 break;
                                         }
@@ -316,7 +332,6 @@ public class Main extends Application {
 
                     if(usernameText.getText().isEmpty()){
                         usernameText.setText("Nameless");
-
                     }
 
                     self = new UserItem(usernameText.getText(), "Active");
@@ -386,7 +401,29 @@ public class Main extends Application {
         imageButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 if(connected) {
-                    //TODO: setup file database here...
+                    FileChooser fileChooser = new FileChooser();
+                    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image Files (.png, .jpg)", "*.png", "*.jpg");
+                    fileChooser.getExtensionFilters().add(extFilter);
+
+                    File selectedFile = fileChooser.showOpenDialog(null);
+
+                    try {
+                            BufferedImage img = ImageIO.read(selectedFile);
+                            ImageChatItem chat = new ImageChatItem(img, self);
+                            items.add(chat);
+
+                            chatList.getChildren().add(SetupImage(chat, true));
+                            //call send packet
+                            if(isHost){
+                                Relay(chat);
+                            }else {
+                                SendData(chat);
+                            }
+
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+
                 }
             }
         });
@@ -434,6 +471,14 @@ public class Main extends Application {
         chatList.getChildren().add(SetupText(chat, false));
     }
 
+    //process incomming images
+    public void RecieveImage(ImageChatItem chat){
+        items.add(chat);
+
+        chatList.getChildren().add(SetupImage(chat, false));
+    }
+
+
     public Label SetupText(TextChatItem item, boolean self){
         Label returnLabel = new Label(item.getText());
 
@@ -457,7 +502,14 @@ public class Main extends Application {
 
         return returnLabel;
     }
+    public ImageView SetupImage(ImageChatItem item, boolean self){
+        ImageView returnLabel = new ImageView();
+        returnLabel.setImage(SwingFXUtils.toFXImage(item.getImage(), null));
+        returnLabel.setPreserveRatio(true);
+        returnLabel.setFitWidth(300);
 
+        return returnLabel;
+    }
 
     //region ClientFunctionality
     //all functions called by clients
@@ -528,6 +580,9 @@ public class Main extends Application {
                                 break;
                             case CHATTEXT:
                                 RecieveMessage((TextChatItem) newItem);
+                                break;
+                            case CHATIMAGE:
+                                RecieveImage((ImageChatItem) newItem);
                                 break;
                             default:
                                 break;

@@ -6,7 +6,7 @@ public class DataItem implements Serializable {
     public enum ItemType{
         USERITEM,
         CHATTEXT,
-        CHATFILE,
+        CHATIMAGE,
     }
 
     protected ItemType type;
