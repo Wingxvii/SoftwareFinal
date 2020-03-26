@@ -60,7 +60,7 @@ public class MainProject extends Application {
     //bottom chat input
     HBox messageInput = new HBox();
     //text input
-    TextField textInput = new TextField();
+    TextArea textInput = new TextArea();
     //send button
     Button sendButton = new Button("Send");
     //chat pane
@@ -137,6 +137,10 @@ public class MainProject extends Application {
                     "-fx-font-size: 16px;"
             ;
 
+    String textStyles =
+            "-fx-font-family: 'Arial';"
+            ;
+
     //endregion
 
     @Override
@@ -145,15 +149,19 @@ public class MainProject extends Application {
         //setup format
         textInput.setStyle(promptStyles);
         textInput.setMinSize(600,50);
+        textInput.setPrefSize(600, 50);
         //textInput.setFont(new Font(12));
         textInput.setPromptText("Send Message...");
+        textInput.setWrapText(true);
 
         sendButton.setStyle(btStyles);
         sendButton.setMinSize(100,50);
+        Tooltip.install(sendButton, new Tooltip("Send Message"));
         //sendButton.setFont(new Font(20));
 
         imageButton.setStyle(btStyles);
         imageButton.setMinSize(120,50);
+        Tooltip.install(imageButton, new Tooltip("Send Image File"));
         //imageButton.setFont(new Font(14));
 
         sendButton.setDisable(true);
@@ -161,6 +169,7 @@ public class MainProject extends Application {
         textInput.setDisable(true);
 
         chatLog.setFitToHeight(true);
+        chatLog.setDisable(true);
         //auto scroll to bottom
         chatList.heightProperty().addListener(new ChangeListener() {
             @Override
@@ -168,21 +177,26 @@ public class MainProject extends Application {
                 chatLog.setVvalue((Double)newValue);
             }
         });
-        chatLog.setDisable(true);
+        chatList.setSpacing(5);
+        chatList.setPadding(new Insets(5));
 
         //user table
         TableColumn<String,String> usernameDisplay = new TableColumn<>("Username");
         usernameDisplay.setCellValueFactory(new PropertyValueFactory<>("Username"));
         usernameDisplay.setResizable(false);
+        usernameDisplay.setReorderable(false);
+        usernameDisplay.setSortable(false);
         usernameDisplay.setPrefWidth(200);
         TableColumn<String,String> statusDisplay = new TableColumn<>("Status");
         statusDisplay.setCellValueFactory(new PropertyValueFactory<>("Status"));
         statusDisplay.setResizable(false);
+        statusDisplay.setReorderable(false);
         statusDisplay.setPrefWidth(50);
         userTable.getColumns().addAll(usernameDisplay, statusDisplay);
         userTable.getItems().add(self);
         userTable.setEditable(false);
         userTable.setDisable(true);
+        userTable.setStyle(textStyles);
 
         //save option
         menuSave.setOnAction(new EventHandler<ActionEvent>() {
@@ -244,6 +258,7 @@ public class MainProject extends Application {
 
         messageInput.getChildren().addAll(imageButton,textInput,sendButton);
         messageInput.setSpacing(5);
+        messageInput.setPadding(new Insets(5));
 
         masterPane.setPadding(new Insets(0,5,5,5));
 
@@ -592,40 +607,28 @@ public class MainProject extends Application {
 
 
     public HBox SetupText (TextChatItem item, boolean self){
-        HBox newBox = new HBox();
-
         Label returnLabel = new Label(item.getText());
         returnLabel.setStyle(labelStyles);
+        returnLabel.setAlignment(Pos.BASELINE_LEFT);
+        returnLabel.setTextAlignment(TextAlignment.LEFT);
+        returnLabel.setText(": " + (returnLabel).getText());
+
         Label returnLabel2 = new Label(item.getUserParent().getUsername());
         returnLabel2.setStyle(labelStyles);
-
-        //returnLabel.setFont(new Font(18));
-        //returnLabel2.setFont(new Font(23));
-        newBox.setMinWidth(560);
+        returnLabel2.setStyle("-fx-Font-Weight: BOLD;");
 
         if(self) {
-            returnLabel.setAlignment(Pos.BASELINE_RIGHT);
-            returnLabel.setTextAlignment(TextAlignment.RIGHT);
-            newBox.setAlignment(Pos.BASELINE_RIGHT);
-
-            returnLabel.setText((returnLabel).getText() + " :");
             returnLabel.setTextFill(Color.GREEN);
             returnLabel2.setTextFill(Color.GREEN);
-            returnLabel2.setStyle("-fx-Font-Weight: BOLD;");
-            newBox.getChildren().addAll(returnLabel, returnLabel2);
-
         }else{
-            returnLabel.setAlignment(Pos.BASELINE_LEFT);
-            returnLabel.setTextAlignment(TextAlignment.LEFT);
-            newBox.setAlignment(Pos.BASELINE_LEFT);
-
-            returnLabel.setText(": " + returnLabel.getText());
             returnLabel.setTextFill(Color.BLUE);
             returnLabel2.setTextFill(Color.BLUE);
-            returnLabel2.setStyle("-fx-Font-Weight: BOLD;");
-            newBox.getChildren().addAll(returnLabel2,returnLabel);
-
         }
+
+        HBox newBox = new HBox();
+        newBox.setMinWidth(560);
+        newBox.setAlignment(Pos.BASELINE_LEFT);
+        newBox.getChildren().addAll(returnLabel2,returnLabel);
 
         return newBox;
     }
@@ -638,11 +641,6 @@ public class MainProject extends Application {
         Tooltip.install(returnLabel, new Tooltip("Right Click to Save"));
 
         BorderPane alignment = new BorderPane();
-        Label desc = new Label(item.getImageName());
-
-        desc.setFont(new Font(10));
-        desc.setMinWidth(600);
-        alignment.setBottom(desc);
 
         //context menu for image saving
         ContextMenu menu = new ContextMenu();
@@ -662,7 +660,6 @@ public class MainProject extends Application {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
         });
 
@@ -676,18 +673,27 @@ public class MainProject extends Application {
             }
         });
 
+        Label returnLabel2 = new Label(item.getUserParent().getUsername() + ": " + item.getImageName());
+        returnLabel2.setStyle("-fx-Font-Weight: BOLD;");
+
         if(self) {
-            alignment.setRight(returnLabel);
-            desc.setTextFill(Color.GREEN);
-            desc.setAlignment(Pos.BASELINE_RIGHT);
-            desc.setTextAlignment(TextAlignment.RIGHT);
+            returnLabel2.setTextFill(Color.GREEN);
+            //alignment.setRight(returnLabel);
+            //desc.setTextFill(Color.GREEN);
+
+            //desc.setAlignment(Pos.BASELINE_RIGHT);
+            //desc.setTextAlignment(TextAlignment.RIGHT);
 
         }else {
-            alignment.setLeft(returnLabel);
-            desc.setTextFill(Color.BLUE);
-            desc.setAlignment(Pos.BASELINE_LEFT);
-            desc.setTextAlignment(TextAlignment.LEFT);
+            returnLabel2.setTextFill(Color.BLUE);
+            //desc.setTextFill(Color.BLUE);
         }
+
+        alignment.setTop(returnLabel2);
+        alignment.setLeft(returnLabel);
+        returnLabel2.setTextAlignment(TextAlignment.LEFT);
+        //returnLabel2.setAlignment(Pos.BASELINE_LEFT);
+
 
         return alignment;
     }
@@ -806,7 +812,7 @@ public class MainProject extends Application {
             SendData(item, connection);
         }
     }
-    //host user update that checks for user initalization
+    //host user update that checks for user initialization
     public void UserUpdate(UserItem user, ClientConnections connection){
         boolean found = false;
 
