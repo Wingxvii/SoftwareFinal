@@ -8,6 +8,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -62,7 +63,7 @@ public class MainProject extends Application {
     VBox chatList = new VBox();
     ScrollPane chatLog = new ScrollPane(chatList);
     //file transfer button
-    Button imageButton = new Button("Image..");
+    Button imageButton = new Button("Load Image");
     //menu
     MenuBar menubar = new MenuBar();
     //user table
@@ -103,14 +104,29 @@ public class MainProject extends Application {
 
     //region Menu
     // Styling
-    String styles =
-            "-fx-background-color: #0000ff;" +
-                    "-fx-border-color: #ff0000;" ;
+    String btStyles =
+            "-fx-border-color: rgba(0, 0, 0, 0);" +
+            "-fx-border-width: 1px;" +
+            "-fx-background-color: linear-gradient(#ddddff, #7777ff 50%, #9999ff 60%, #ccccff 100%);" +//, radial-gradient(center 50% 50%, radius 100%, #5555ff 50%, #9999ff 51%);" +
+            "-fx-text-fill: rgba(0, 0, 0, 255);" +
+            "-fx-font-family: 'Times New Roman';" +
+            "-fx-font-size: 26px;" +
+            "-fx-background-radius: 15;" + "-fx-padding: 10 10 10 10;" //+ "-fx-background-insets: 0,1,2,3,0;"
+            ;
+
+    String labelStyles =
+            "-fx-font-family: 'Arial';" +
+                    "-fx-font-size: 12px;"
+            ;
+
+
     //endregion
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        sendButton.setStyle(styles);
+        sendButton.setStyle(btStyles);
+        imageButton.setStyle(btStyles);
+
         //setup format
         textInput.setMinSize(750,50);
         textInput.setFont(new Font(12));
@@ -206,7 +222,7 @@ public class MainProject extends Application {
         menuFile.setDisable(true);
         statusMenu.setDisable(true);
 
-        messageInput.getChildren().addAll(textInput,sendButton,imageButton);
+        messageInput.getChildren().addAll(imageButton,textInput,sendButton);
 
         masterPane.setBottom(messageInput);
         masterPane.setLeft(userTable);
@@ -231,14 +247,34 @@ public class MainProject extends Application {
 
     //setup login window
     public void SetupLogin(){
+        HBox connectionGrid = new HBox();
+        connectionGrid.setAlignment(Pos.CENTER);
+
+        GridPane connectionInputs = new GridPane();
+        connectionInputs.setPadding(new Insets(10,10,10,10));
+        connectionInputs.setHgap(5);
+        connectionInputs.setVgap(5);
+
+        GridPane connectBt = new GridPane();
+        connectBt.setPadding(new Insets(10,10,10,10));
+        connectBt.setHgap(5);
+        connectBt.setVgap(5);
 
         Label usernameLabel = new Label("Username:");
+        usernameLabel.setStyle(labelStyles);
         Label ipLabel = new Label("IP Address:");
+        ipLabel.setStyle(labelStyles);
         Label connectionFailed = new Label("Connection Failed");
+        connectionFailed.setStyle(labelStyles);
         connectionFailed.setVisible(false);
         connectionFailed.setTextFill(Color.RED);
 
         CheckBox isHostButton = new CheckBox("Host");
+        isHostButton.setStyle(labelStyles);
+
+        Button confirmButton = new Button("Connect");
+        //confirmButton.setStyle("-fx-background-color: rgba(0, 0, 255, 100);");
+        confirmButton.setStyle(btStyles);
 
         TextField usernameText = new TextField();
         TextField ipText = new TextField();
@@ -255,18 +291,19 @@ public class MainProject extends Application {
             }
         });
 
-        Button confirm = new Button("Confirm");
 
-        GridPane gridPane = new GridPane();
-        gridPane.add(usernameLabel, 0,0);
-        gridPane.add(ipLabel, 0,1);
-        gridPane.add(usernameText, 1,0);
-        gridPane.add(ipText, 1,1);
-        gridPane.add(isHostButton, 1,2);
-        gridPane.add(confirm,2,0);
-        gridPane.add(connectionFailed,2,1 );
+        connectionInputs.add(usernameLabel, 0, 0);
+        connectionInputs.add(ipLabel, 0,1);
+        connectionInputs.add(usernameText, 1,0);
+        connectionInputs.add(ipText, 1,1);
+        connectionInputs.add(isHostButton, 0,2);
+        connectionInputs.add(connectionFailed,1,2 );
 
-        confirm.setOnAction(new EventHandler<ActionEvent>() {
+        connectBt.add(confirmButton, 0, 0);
+
+        connectionGrid.getChildren().addAll(connectionInputs, connectBt);
+
+        confirmButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
 
                 boolean connection = false;
@@ -368,7 +405,7 @@ public class MainProject extends Application {
         });
 
         //open connection window
-        Scene secondScene = new Scene(gridPane, 350, 100);
+        Scene secondScene = new Scene(connectionGrid, 400, 110);
 
         newWindow.setTitle("Connect");
         newWindow.setScene(secondScene);
