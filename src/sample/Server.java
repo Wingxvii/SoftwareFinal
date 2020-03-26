@@ -66,12 +66,6 @@ public class Server  extends Application {
 
                 while(true) {
 
-                    //int len = inputFromClient.readInt();
-                    //ta.appendText("Len:" + len + '\n');
-                    //byte[] data = new byte[len];
-                    //inputFromClient.read(data);
-                    //String dataOut = new String(data);
-
                     for (int i = 0; i < clientCounter; i++){
                         //if(clients[i] != socket) {
                         outputs[i].write(inputFromClient.read());

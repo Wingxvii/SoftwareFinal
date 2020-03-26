@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -67,8 +68,8 @@ public class Main extends Application {
     MenuItem statusBusy = new MenuItem("Busy");
 
     // Networking Variables
-    DataInputStream dataIn = null;
-    DataOutputStream dataOut = null;
+    BufferedReader dataIn = null;
+    PrintWriter dataOut = null;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -176,10 +177,8 @@ public class Main extends Application {
         primaryStage.setScene(masterScene);
         primaryStage.show();
 
-
         //setup the login data
         SetupLogin();
-
     }
 
     public static void main(String[] args) {
@@ -214,8 +213,8 @@ public class Main extends Application {
                 try {
                     Socket socket = new Socket(ipText.getText(), 55555);
 
-                    dataIn = new DataInputStream(socket.getInputStream());
-                    dataOut = new DataOutputStream(socket.getOutputStream());
+                    dataIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    dataOut = new PrintWriter(socket.getOutputStream(), true);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     connection = false;
@@ -254,14 +253,11 @@ public class Main extends Application {
 
     //TODO: Send message data
     public void SendMessage(String text, UserItem user){
-        try {
-            dataOut.writeInt(text.length());
-            //dataOut.writeInt(user.);
-            dataOut.writeBytes(text);
-            //dataOut.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        dataOut.println(text);
+        //dataOut.writeInt(text.length());
+        //dataOut.writeInt(user.);
+        //dataOut.writeBytes(text);
+        //dataOut.flush();
     }
 
     //TODO: Call this for incomming messages
@@ -329,18 +325,18 @@ public class Main extends Application {
 
         //setup functionality
         sendButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                if(connected) {
-                    ChatItem chat = new ChatItem(new Label(textInput.getText()), self);
-                    chat.SetupText(true);
-                    textInput.clear();
-                    items.add(chat);
+                @Override public void handle(ActionEvent e) {
+                    if(connected) {
+                        ChatItem chat = new ChatItem(new Label(textInput.getText()), self);
+                        chat.SetupText(true);
+                        textInput.clear();
+                        items.add(chat);
 
-                    chatList.getChildren().add(chat.nodeItem);
-                    //call send packet
-                    SendMessage(textInput.getText(), self);
+                        chatList.getChildren().add(chat.nodeItem);
+                        //call send packet
+                        SendMessage(textInput.getText(), self);
+                    }
                 }
-            }
         });
 
         imageButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -369,5 +365,4 @@ public class Main extends Application {
         });
 
     }
-
 }
