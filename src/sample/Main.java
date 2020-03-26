@@ -7,6 +7,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,6 +16,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -365,12 +368,11 @@ public class Main extends Application {
         sendButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 if(connected) {
-                    TextChatItem chat = new TextChatItem(new Label(textInput.getText()), self);
-                    chat.Setup(true);
+                    TextChatItem chat = new TextChatItem(textInput.getText(), self);
                     textInput.clear();
                     items.add(chat);
 
-                    chatList.getChildren().add(chat.nodeItem);
+                    chatList.getChildren().add(SetupText(chat, true));
                     //call send packet
                     if(isHost){
                         Relay(chat);
@@ -427,11 +429,35 @@ public class Main extends Application {
 
     //process incomming messages
     public void RecieveMessage(TextChatItem chat){
-        chat.Setup(false);
         items.add(chat);
 
-        chatList.getChildren().add(chat.nodeItem);
+        chatList.getChildren().add(SetupText(chat, false));
     }
+
+    public Label SetupText(TextChatItem item, boolean self){
+        Label returnLabel = new Label(item.getText());
+
+        returnLabel.setFont(new Font(18));
+        returnLabel.setMinWidth(600);
+
+        if(self) {
+            returnLabel.setText((returnLabel).getText() + " - " + item.getUserParent().getUsername());
+            returnLabel.setTextFill(Color.GREEN);
+
+            returnLabel.setAlignment(Pos.BASELINE_RIGHT);
+            returnLabel.setTextAlignment(TextAlignment.RIGHT);
+        }else{
+            returnLabel.setText(item.getUserParent().getUsername() + " - " + returnLabel.getText());
+            returnLabel.setTextFill(Color.BLUE);
+
+            returnLabel.setAlignment(Pos.BASELINE_LEFT);
+            returnLabel.setTextAlignment(TextAlignment.LEFT);
+        }
+
+
+        return returnLabel;
+    }
+
 
     //region ClientFunctionality
     //all functions called by clients
@@ -457,7 +483,7 @@ public class Main extends Application {
 
                 //call send packet
                 if(CurrUser.getUsername().matches(self.getUsername())){
-                    SendData(self);
+                    SendData(new UserItem(self));
                 }
                 found = true;
             }
@@ -555,7 +581,7 @@ public class Main extends Application {
 
                 //call send packet
                 if(CurrUser.getUsername().matches(self.getUsername())){
-                    Relay(self);
+                    Relay(new UserItem(self));
                 }
                 found = true;
             }

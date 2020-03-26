@@ -16,6 +16,13 @@ public class UserItem extends DataItem{
 
     }
 
+    public UserItem(UserItem copy){
+        super((DataItem)copy);
+        this.Username = copy.getUsername();
+        this.Status = copy.getStatus();
+        this.type = ItemType.USERITEM;
+    }
+
     //accessors
     public String getUsername() {
         return Username;

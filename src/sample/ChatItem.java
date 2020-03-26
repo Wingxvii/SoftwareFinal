@@ -12,21 +12,10 @@ import javafx.scene.text.TextAlignment;
 public abstract class ChatItem extends DataItem{
     //user who sent data
     UserItem userParent;
-    //node representation of data
-    Node nodeItem;
 
     //constructor
-    ChatItem(Node nodeItem, UserItem userParent){
-        this.nodeItem = nodeItem;
+    ChatItem(UserItem userParent){
         this.userParent = userParent;
-    }
-
-    //setup text nodes
-    public abstract void Setup(boolean self);
-
-    //accessors
-    public Node getNodeItem() {
-        return nodeItem;
     }
 
     public UserItem getUserParent() {
