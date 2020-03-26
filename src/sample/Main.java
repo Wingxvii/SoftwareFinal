@@ -17,6 +17,7 @@ import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -31,7 +32,6 @@ public class Main extends Application {
 
     //list of all chat items
     ArrayList<ChatItem> items = new ArrayList<>();
-
 
     //region UI
     //master container pane
@@ -84,7 +84,6 @@ public class Main extends Application {
     ObjectInputStream in = null;
     ObjectOutputStream out = null;
     //endregion
-
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -252,6 +251,35 @@ public class Main extends Application {
                         in = new ObjectInputStream(soc.getInputStream());
                         out = new ObjectOutputStream(soc.getOutputStream());
 
+                        new Thread(()-> {
+                            while (true){
+                                try {
+                                    DataItem newItem = (DataItem)in.readObject();
+
+                                    Platform.runLater(() -> {
+                                        //process data
+                                        switch (newItem.getType()) {
+                                            case USERITEM:
+                                                //process user item update
+                                                UserUpdate((UserItem) newItem);
+                                                break;
+                                            case CHATTEXT:
+                                                RecieveMessage((TextChatItem) newItem);
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    });
+                                } catch (IOException ex) {
+                                    ex.printStackTrace();
+                                } catch (ClassNotFoundException ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+
+
+                        }).start();
+
                     }else{
                         ServerSocket soc = new ServerSocket(6400);
                         //thread connection handler
@@ -307,104 +335,6 @@ public class Main extends Application {
         newWindow.show();
     }
 
-    public void HandleConnection(ClientConnections connection){
-
-        allUserConnections.add(connection);
-
-        //start a listening thread
-        new Thread(()->{
-            try{
-                //setup input and output
-                connection.setOut(new ObjectOutputStream(connection.getSock().getOutputStream()));
-                connection.setIn(new ObjectInputStream(connection.getSock().getInputStream()));
-
-                //data reception
-                while(true){
-                    DataItem newItem = (DataItem) in.readObject();
-
-                    //schedule process
-                    Platform.runLater(() -> {
-                        //call relay
-                        if (isHost) {
-                            Relay(newItem, connection);
-                        }
-
-                        //process data
-                        switch (newItem.getType()) {
-                            case USERITEM:
-                                //process user item update
-                                connection.setUser((UserItem) newItem);
-                                UserUpdate((UserItem) newItem);
-                                break;
-                            case CHATTEXT:
-                                RecieveMessage((TextChatItem) newItem);
-                                break;
-                            default:
-                                break;
-
-                        }
-                    });
-                }
-
-            }catch(IOException ex) {
-                ex.printStackTrace();
-            }catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-    }
-
-    //TODO: Send message data
-    public void SendMessage(TextChatItem chat){
-
-    }
-
-    //TODO: Call this for incomming messages
-    public void RecieveMessage(TextChatItem chat){
-        chat.Setup(false);
-        items.add(chat);
-
-        chatList.getChildren().add(chat.nodeItem);
-    }
-
-    //TODO: Recieve a file hyperlink
-    public void RecieveFile() {}
-
-    //TODO: Send a file hyperlink
-    public void SendFile() {}
-
-    //Sets up and updates incoming user updates and connections
-    public void UserUpdate(UserItem user){
-        boolean found = false;
-
-        for(UserItem CurrUser : allUsers){
-            if(CurrUser.getUsername().matches(user.getUsername())){
-                CurrUser.setStatus(user.getStatus());
-                UpdateUserList();
-
-                //call send packet
-                if(CurrUser.getUsername().matches(self.getUsername())){
-                    SendUserUpdate(self.getUsername(), self.getStatus());
-                }
-                found = true;
-            }
-        }
-
-        if(!found){
-            allUsers.add(user);
-            UpdateUserList();
-
-        }
-
-    }
-
-    //TODO: Send this for outgoing updates
-    public void SendUserUpdate(String username, String status){
-
-
-    }
-
     //updates user list node
     public void UpdateUserList(){
         userTable.getItems().clear();
@@ -432,7 +362,11 @@ public class Main extends Application {
 
                     chatList.getChildren().add(chat.nodeItem);
                     //call send packet
-                    SendMessage(chat);
+                    if(isHost){
+                        Relay(chat);
+                    }else {
+                        SendData(chat);
+                    }
                 }
             }
         });
@@ -467,13 +401,146 @@ public class Main extends Application {
 
     }
 
-    //Transfers packets to all connected users (ONLY CALLED IF HOST)
+    //region ClientFunctionality
+    //all functions called by clients
+    //TODO: Send message data to host
+    public void SendData(DataItem item){
+
+    }
+
+    //TODO: Call this for incomming messages
+    public void RecieveMessage(TextChatItem chat){
+        chat.Setup(false);
+        items.add(chat);
+
+        chatList.getChildren().add(chat.nodeItem);
+    }
+
+    //Sets up and updates incoming user updates and connections
+    public void UserUpdate(UserItem user){
+        boolean found = false;
+
+        for(UserItem CurrUser : allUsers){
+            if(CurrUser.getUsername().matches(user.getUsername())){
+                CurrUser.setStatus(user.getStatus());
+                UpdateUserList();
+
+                //call send packet
+                if(CurrUser.getUsername().matches(self.getUsername())){
+                    SendData(self);
+                }
+                found = true;
+            }
+        }
+        if(!found){
+            allUsers.add(user);
+            UpdateUserList();
+        }
+    }
+    //endregion
+
+    //region HostFunctionality
+    //all functionality called by host
+
+    //handles connection of new clients
+    public void HandleConnection(ClientConnections connection){
+
+        allUserConnections.add(connection);
+
+        //start a listening thread
+        new Thread(()->{
+            try{
+                //setup input and output
+                connection.setOut(new ObjectOutputStream(connection.getSock().getOutputStream()));
+                connection.setIn(new ObjectInputStream(connection.getSock().getInputStream()));
+
+                //data reception
+                while(true){
+                    DataItem newItem = (DataItem) in.readObject();
+
+                    //schedule process
+                    Platform.runLater(() -> {
+                        //call relay
+                        Relay(newItem, connection);
+
+                        //process data
+                        switch (newItem.getType()) {
+                            case USERITEM:
+                                //process user item update
+                                connection.setUser((UserItem) newItem);
+                                UserUpdate((UserItem) newItem, connection);
+                                break;
+                            case CHATTEXT:
+                                RecieveMessage((TextChatItem) newItem);
+                                break;
+                            default:
+                                break;
+
+                        }
+                    });
+                }
+
+            }catch(IOException ex) {
+                ex.printStackTrace();
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+    }
+
+    //host targeted data send
+    public void SendData(DataItem data, ClientConnections recipient){
+
+    }
+
+    //Transfers packets to all connected users except 1 (ONLY CALLED IF HOST)
     public void Relay(DataItem item, ClientConnections sentClient){
         for(ClientConnections connection : allUserConnections){
             if(sentClient != connection){
-                connection.SendData(item);
+                SendData(item, connection);
             }
         }
     }
+    //Transfers packets to all connected users (ONLY CALLED IF HOST)
+    public void Relay(DataItem item){
+        for(ClientConnections connection : allUserConnections){
+            SendData(item, connection);
+        }
+    }
+    //host user update that checks for user initalization
+    public void UserUpdate(UserItem user, ClientConnections connection){
+        boolean found = false;
 
+        for(UserItem CurrUser : allUsers){
+            if(CurrUser.getUsername().matches(user.getUsername())){
+                CurrUser.setStatus(user.getStatus());
+                UpdateUserList();
+
+                //call send packet
+                if(CurrUser.getUsername().matches(self.getUsername())){
+                    Relay(self);
+                }
+                found = true;
+            }
+        }
+        if(!found){
+            allUsers.add(user);
+            UpdateUserList();
+            SendInitData(connection);
+        }
+    }
+
+    //sends data logs to player
+    public void SendInitData(ClientConnections connection){
+        for(UserItem user :allUsers ){
+            SendData(user, connection);
+        }
+        for(ChatItem chat : items){
+            SendData(chat, connection);
+        }
+    }
+
+
+    //endregion
 }

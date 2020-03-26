@@ -13,7 +13,6 @@ public class ClientConnections {
     private ObjectOutputStream out = null;
     private ObjectInputStream in = null;
 
-
     public ClientConnections(Socket sock){
         this.sock = sock;
     }
@@ -29,11 +28,6 @@ public class ClientConnections {
 
     public void setOut(ObjectOutputStream out){this.out = out;}
     public void setIn(ObjectInputStream in){this.in = in;}
-
-    public void SendData(DataItem item){
-
-
-    }
 
 
 }
