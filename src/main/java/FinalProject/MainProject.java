@@ -24,6 +24,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -104,14 +108,18 @@ public class MainProject extends Application {
 
     //region Menu
     // Styling
+    String bgStyles =
+            "-fx-background-color: rgba(240, 255, 240, 20);";
+
     String btStyles =
             "-fx-border-color: rgba(0, 0, 0, 0);" +
             "-fx-border-width: 1px;" +
-            "-fx-background-color: linear-gradient(#ddddff, #7777ff 50%, #9999ff 60%, #ccccff 100%);" +//, radial-gradient(center 50% 50%, radius 100%, #5555ff 50%, #9999ff 51%);" +
-            "-fx-text-fill: rgba(0, 0, 0, 255);" +
-            "-fx-font-family: 'Times New Roman';" +
-            "-fx-font-size: 26px;" +
-            "-fx-background-radius: 15;" + "-fx-padding: 10 10 10 10;" //+ "-fx-background-insets: 0,1,2,3,0;"
+            "-fx-background-color: #7777ff;" + //linear-gradient(#ddddff, #7777ff 50%, #9999ff 60%, #ccccff 100%);" +//, radial-gradient(center 50% 50%, radius 100%, #5555ff 50%, #9999ff 51%);" +
+            "-fx-text-fill: rgba(230, 230, 230, 255);" +
+            "-fx-font-family: 'Arial';" +
+            "-fx-font-weight: BOLD;" +
+            "-fx-font-size: 16px;" +
+            "-fx-background-radius: 10;" + "-fx-padding: 10 10 10 10;" //+ "-fx-background-insets: 0,1,2,3,0;"
             ;
 
     String labelStyles =
@@ -119,24 +127,34 @@ public class MainProject extends Application {
                     "-fx-font-size: 12px;"
             ;
 
+    String activeUserStyles =
+            "-fx-background-color: #55ff55;"
+
+            ;
+
+    String promptStyles =
+            "-fx-font-family: 'Arial';" +
+                    "-fx-font-size: 16px;"
+            ;
 
     //endregion
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        sendButton.setStyle(btStyles);
-        imageButton.setStyle(btStyles);
 
         //setup format
-        textInput.setMinSize(750,50);
-        textInput.setFont(new Font(12));
+        textInput.setStyle(promptStyles);
+        textInput.setMinSize(600,50);
+        //textInput.setFont(new Font(12));
         textInput.setPromptText("Send Message...");
 
+        sendButton.setStyle(btStyles);
         sendButton.setMinSize(100,50);
-        sendButton.setFont(new Font(20));
+        //sendButton.setFont(new Font(20));
 
-        imageButton.setMinSize(70,50);
-        imageButton.setFont(new Font(14));
+        imageButton.setStyle(btStyles);
+        imageButton.setMinSize(120,50);
+        //imageButton.setFont(new Font(14));
 
         sendButton.setDisable(true);
         imageButton.setDisable(true);
@@ -150,12 +168,13 @@ public class MainProject extends Application {
                 chatLog.setVvalue((Double)newValue);
             }
         });
+        chatLog.setDisable(true);
 
         //user table
         TableColumn<String,String> usernameDisplay = new TableColumn<>("Username");
         usernameDisplay.setCellValueFactory(new PropertyValueFactory<>("Username"));
         usernameDisplay.setResizable(false);
-        usernameDisplay.setPrefWidth(250);
+        usernameDisplay.setPrefWidth(200);
         TableColumn<String,String> statusDisplay = new TableColumn<>("Status");
         statusDisplay.setCellValueFactory(new PropertyValueFactory<>("Status"));
         statusDisplay.setResizable(false);
@@ -163,6 +182,7 @@ public class MainProject extends Application {
         userTable.getColumns().addAll(usernameDisplay, statusDisplay);
         userTable.getItems().add(self);
         userTable.setEditable(false);
+        userTable.setDisable(true);
 
         //save option
         menuSave.setOnAction(new EventHandler<ActionEvent>() {
@@ -223,11 +243,15 @@ public class MainProject extends Application {
         statusMenu.setDisable(true);
 
         messageInput.getChildren().addAll(imageButton,textInput,sendButton);
+        messageInput.setSpacing(5);
 
-        masterPane.setBottom(messageInput);
+        masterPane.setPadding(new Insets(0,5,5,5));
+
+        masterPane.setTop(menubar);
         masterPane.setLeft(userTable);
         masterPane.setCenter(chatLog);
-        masterPane.setTop(menubar);
+        masterPane.setBottom(messageInput);
+        masterPane.setStyle(bgStyles);
 
         //Parent root = FXMLLoader.load(getClass().getResource(System.getProperty("user.dir") + "/src/main/resources/FinalProject.fxml"));
         //System.out.println("Present Project Directory : "+ System.getProperty("user.dir") + "/src/main/resources/FinalProject.fxml");
@@ -275,6 +299,9 @@ public class MainProject extends Application {
         Button confirmButton = new Button("Connect");
         //confirmButton.setStyle("-fx-background-color: rgba(0, 0, 255, 100);");
         confirmButton.setStyle(btStyles);
+        confirmButton.setMinSize(100, 55);
+
+
 
         TextField usernameText = new TextField();
         TextField ipText = new TextField();
@@ -428,6 +455,8 @@ public class MainProject extends Application {
         menuFile.setDisable(false);
         statusMenu.setDisable(false);
         textInput.setDisable(false);
+        userTable.setDisable(false);
+        chatLog.setDisable(false);
 
         //setup functionality
         sendButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -443,6 +472,31 @@ public class MainProject extends Application {
                         Relay(chat);
                     }else {
                         SendData(chat);
+                    }
+                }
+            }
+        });
+
+        //added enter submission
+        textInput.setOnKeyPressed(new EventHandler<KeyEvent>()
+        {
+            @Override
+            public void handle(KeyEvent ke)
+            {
+                if (ke.getCode().equals(KeyCode.ENTER))
+                {
+                    if(connected) {
+                        TextChatItem chat = new TextChatItem(textInput.getText(), self);
+                        textInput.clear();
+                        items.add(chat);
+
+                        chatList.getChildren().add(SetupText(chat, true));
+                        //call send packet
+                        if(isHost){
+                            Relay(chat);
+                        }else {
+                            SendData(chat);
+                        }
                     }
                 }
             }
@@ -502,13 +556,21 @@ public class MainProject extends Application {
         statusActive.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
                 self.setStatus("Active");
-                UserUpdate(self);
+                if(isHost){
+                    UserUpdate(self,null);
+                }else{
+                    UserUpdate(self);
+                }
             }
         });
         statusBusy.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
                 self.setStatus("Busy");
-                UserUpdate(self);
+                if(isHost){
+                    UserUpdate(self,null);
+                }else{
+                    UserUpdate(self);
+                }
             }
         });
 
@@ -529,34 +591,51 @@ public class MainProject extends Application {
     }
 
 
-    public Label SetupText(TextChatItem item, boolean self){
-        Label returnLabel = new Label(item.getText());
+    public HBox SetupText (TextChatItem item, boolean self){
+        HBox newBox = new HBox();
 
-        returnLabel.setFont(new Font(18));
-        returnLabel.setMinWidth(600);
+        Label returnLabel = new Label(item.getText());
+        returnLabel.setStyle(labelStyles);
+        Label returnLabel2 = new Label(item.getUserParent().getUsername());
+        returnLabel2.setStyle(labelStyles);
+
+        //returnLabel.setFont(new Font(18));
+        //returnLabel2.setFont(new Font(23));
+        newBox.setMinWidth(560);
 
         if(self) {
-            returnLabel.setText((returnLabel).getText() + " - " + item.getUserParent().getUsername());
-            returnLabel.setTextFill(Color.GREEN);
-
             returnLabel.setAlignment(Pos.BASELINE_RIGHT);
             returnLabel.setTextAlignment(TextAlignment.RIGHT);
-        }else{
-            returnLabel.setText(item.getUserParent().getUsername() + " - " + returnLabel.getText());
-            returnLabel.setTextFill(Color.BLUE);
+            newBox.setAlignment(Pos.BASELINE_RIGHT);
 
+            returnLabel.setText((returnLabel).getText() + " :");
+            returnLabel.setTextFill(Color.GREEN);
+            returnLabel2.setTextFill(Color.GREEN);
+            returnLabel2.setStyle("-fx-Font-Weight: BOLD;");
+            newBox.getChildren().addAll(returnLabel, returnLabel2);
+
+        }else{
             returnLabel.setAlignment(Pos.BASELINE_LEFT);
             returnLabel.setTextAlignment(TextAlignment.LEFT);
+            newBox.setAlignment(Pos.BASELINE_LEFT);
+
+            returnLabel.setText(": " + returnLabel.getText());
+            returnLabel.setTextFill(Color.BLUE);
+            returnLabel2.setTextFill(Color.BLUE);
+            returnLabel2.setStyle("-fx-Font-Weight: BOLD;");
+            newBox.getChildren().addAll(returnLabel2,returnLabel);
+
         }
 
-
-        return returnLabel;
+        return newBox;
     }
+
     public BorderPane SetupImage(ImageChatItem item, boolean self){
         ImageView returnLabel = new ImageView();
         returnLabel.setImage(SwingFXUtils.toFXImage(item.getImage(), null));
         returnLabel.setPreserveRatio(true);
         returnLabel.setFitWidth(300);
+        Tooltip.install(returnLabel, new Tooltip("Right Click to Save"));
 
         BorderPane alignment = new BorderPane();
         Label desc = new Label(item.getImageName());
@@ -564,6 +643,38 @@ public class MainProject extends Application {
         desc.setFont(new Font(10));
         desc.setMinWidth(600);
         alignment.setBottom(desc);
+
+        //context menu for image saving
+        ContextMenu menu = new ContextMenu();
+
+        MenuItem save = new MenuItem("Save Image");
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                //save
+                FileChooser fileChooser = new FileChooser();
+                FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Image Files", "*.png");
+                fileChooser.getExtensionFilters().add(filter);
+
+                File selectedFile = fileChooser.showSaveDialog(null);
+                try {
+                    ImageIO.write(item.getImage(), "png", selectedFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        menu.getItems().addAll(save);
+        returnLabel.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
+
+            @Override
+            public void handle(ContextMenuEvent event) {
+
+                menu.show(returnLabel, event.getScreenX(), event.getScreenY());
+            }
+        });
 
         if(self) {
             alignment.setRight(returnLabel);
@@ -711,7 +822,7 @@ public class MainProject extends Application {
                 found = true;
             }
         }
-        if(!found){
+        if(!found && connection != null){
             allUsers.add(user);
             UpdateUserList();
             SendInitData(connection);
