@@ -122,11 +122,6 @@ public class MainProject extends Application {
                     "-fx-font-size: 12px;"
             ;
 
-    String activeUserStyles =
-            "-fx-background-color: #55ff55;"
-
-            ;
-
     String promptStyles =
             "-fx-font-family: 'Arial';" +
                     "-fx-font-size: 16px;"
@@ -134,6 +129,11 @@ public class MainProject extends Application {
 
     String textStyles =
             "-fx-font-family: 'Arial';"
+            ;
+
+    String windowStyles =
+            "-fx-font-family: 'Arial';" +
+            "-fx-background-color: rgba(240, 240, 255, 10);"
             ;
 
     //endregion
@@ -160,6 +160,7 @@ public class MainProject extends Application {
         imageButton.setDisable(true);
         Tooltip.install(imageButton, new Tooltip("Send Image File"));
 
+        //chatLog.setStyle(windowStyles);
         chatLog.setFitToHeight(true);
         chatLog.setDisable(true);
         //auto scroll to bottom
@@ -179,11 +180,13 @@ public class MainProject extends Application {
         usernameDisplay.setReorderable(false);
         usernameDisplay.setSortable(false);
         usernameDisplay.setPrefWidth(200);
+
         TableColumn<String,String> statusDisplay = new TableColumn<>("Status");
         statusDisplay.setCellValueFactory(new PropertyValueFactory<>("Status"));
         statusDisplay.setResizable(false);
         statusDisplay.setReorderable(false);
         statusDisplay.setPrefWidth(50);
+
         userTable.getColumns().addAll(usernameDisplay, statusDisplay);
         userTable.getItems().add(self);
         userTable.setEditable(false);
