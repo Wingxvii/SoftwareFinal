@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -17,12 +18,11 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class Main extends Application {
-
-    boolean connected = false;
-
     //reference to self user item
     UserItem self;
 
@@ -32,6 +32,8 @@ public class Main extends Application {
     //list of all chat items
     ArrayList<ChatItem> items = new ArrayList<>();
 
+
+    //region UI
     //master container pane
     BorderPane masterPane = new BorderPane();
     //bottom chat input
@@ -50,11 +52,16 @@ public class Main extends Application {
     //user table
     TableView userTable = new TableView();
 
+    //endregion
+
+    //region Scene
     //main scene
     Scene masterScene = new Scene(masterPane);
     //connect scene
     Stage newWindow = new Stage();
+    //endregion
 
+    //region Menu
     //Menu
     Menu menuFile = new Menu("File");
     Menu statusMenu = new Menu("Status");
@@ -64,6 +71,20 @@ public class Main extends Application {
 
     MenuItem statusActive = new MenuItem("Active");
     MenuItem statusBusy = new MenuItem("Busy");
+    //endregion
+
+    //region Network
+    //Network IO
+    boolean isHost = false;
+    ArrayList<ClientConnections> allUserConnections = new ArrayList<>();
+
+
+    boolean connected = false;
+
+    ObjectInputStream in = null;
+    ObjectOutputStream out = null;
+    //endregion
+
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -128,7 +149,7 @@ public class Main extends Application {
                             switch (chat.type){
                                 case CHATTEXT:
                                     writer.append(chat.getUserParent().getUsername() + ",");
-                                    writer.append(chat.getText());
+                                    writer.append(((TextChatItem)chat).getText());
 
                                     break;
                                 case CHATFILE:
@@ -187,8 +208,22 @@ public class Main extends Application {
         Label usernameLabel = new Label("Username:");
         Label ipLabel = new Label("IP Address:");
 
+        CheckBox isHost = new CheckBox("Host");
+
         TextField usernameText = new TextField();
         TextField ipText = new TextField();
+
+        isHost.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if(newValue){
+                    ipText.setDisable(true);
+               }else{
+                    ipText.setDisable(false);
+
+                }
+            }
+        });
 
         Button confirm = new Button("Confirm");
 
@@ -197,6 +232,7 @@ public class Main extends Application {
         gridPane.add(ipLabel, 0,1);
         gridPane.add(usernameText, 1,0);
         gridPane.add(ipText, 1,1);
+        gridPane.add(isHost, 1,2);
         gridPane.add(confirm,2,0);
 
         Label connectionFailed = new Label("Connection Failed");
@@ -204,9 +240,41 @@ public class Main extends Application {
 
         confirm.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                boolean connection = true;
-                //TODO: check connection
 
+                boolean connection = false;
+
+                //TODO: check connection
+                try {
+                    if(!isHost.isSelected()){
+                        //connect to the server
+                        Socket soc = new Socket(ipLabel.getText() , 6400);
+                        //create input and output streams
+                        in = new ObjectInputStream(soc.getInputStream());
+                        out = new ObjectOutputStream(soc.getOutputStream());
+
+                    }else{
+                        ServerSocket soc = new ServerSocket(6400);
+                        //thread connection handler
+                        new Thread(()-> {
+                        while(true) {
+                            try {
+                                Socket client = soc.accept();
+                                HandleConnection(new ClientConnections(client));
+
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
+
+                        }
+                        }).start();
+                    }
+                    //set connection to be true
+                    connection = true;
+
+                }catch (IOException ex){
+                    //set connection to be false
+                    connection = false;
+                }
 
                 if(connection){
                     //TODO: setup initial chatroom data
@@ -239,15 +307,62 @@ public class Main extends Application {
         newWindow.show();
     }
 
+    public void HandleConnection(ClientConnections connection){
+
+        allUserConnections.add(connection);
+
+        //start a listening thread
+        new Thread(()->{
+            try{
+                //setup input and output
+                connection.setOut(new ObjectOutputStream(connection.getSock().getOutputStream()));
+                connection.setIn(new ObjectInputStream(connection.getSock().getInputStream()));
+
+                //data reception
+                while(true){
+                    DataItem newItem = (DataItem) in.readObject();
+
+                    //schedule process
+                    Platform.runLater(() -> {
+                        //call relay
+                        if (isHost) {
+                            Relay(newItem, connection);
+                        }
+
+                        //process data
+                        switch (newItem.getType()) {
+                            case USERITEM:
+                                //process user item update
+                                connection.setUser((UserItem) newItem);
+                                UserUpdate((UserItem) newItem);
+                                break;
+                            case CHATTEXT:
+                                RecieveMessage((TextChatItem) newItem);
+                                break;
+                            default:
+                                break;
+
+                        }
+                    });
+                }
+
+            }catch(IOException ex) {
+                ex.printStackTrace();
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+    }
+
     //TODO: Send message data
-    public void SendMessage(String text, UserItem user){
+    public void SendMessage(TextChatItem chat){
 
     }
 
     //TODO: Call this for incomming messages
-    public void RecieveMessage(String text, UserItem user){
-        ChatItem chat = new ChatItem(new Label(text), user);
-        chat.SetupText(false);
+    public void RecieveMessage(TextChatItem chat){
+        chat.Setup(false);
         items.add(chat);
 
         chatList.getChildren().add(chat.nodeItem);
@@ -259,17 +374,17 @@ public class Main extends Application {
     //TODO: Send a file hyperlink
     public void SendFile() {}
 
-    //TODO: Call this for incomming connections
-    public void UserUpdate(String username, String status){
+    //Sets up and updates incoming user updates and connections
+    public void UserUpdate(UserItem user){
         boolean found = false;
 
-        for(UserItem user : allUsers){
-            if(user.getUsername().matches(username)){
-                user.setStatus(status);
+        for(UserItem CurrUser : allUsers){
+            if(CurrUser.getUsername().matches(user.getUsername())){
+                CurrUser.setStatus(user.getStatus());
                 UpdateUserList();
 
                 //call send packet
-                if(user.getUsername().matches(self.getUsername())){
+                if(CurrUser.getUsername().matches(self.getUsername())){
                     SendUserUpdate(self.getUsername(), self.getStatus());
                 }
                 found = true;
@@ -277,8 +392,7 @@ public class Main extends Application {
         }
 
         if(!found){
-            UserItem newUser = new UserItem(username, status);
-            allUsers.add(newUser);
+            allUsers.add(user);
             UpdateUserList();
 
         }
@@ -311,14 +425,14 @@ public class Main extends Application {
         sendButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 if(connected) {
-                    ChatItem chat = new ChatItem(new Label(textInput.getText()), self);
-                    chat.SetupText(true);
+                    TextChatItem chat = new TextChatItem(new Label(textInput.getText()), self);
+                    chat.Setup(true);
                     textInput.clear();
                     items.add(chat);
 
                     chatList.getChildren().add(chat.nodeItem);
                     //call send packet
-                    SendMessage(textInput.getText(), self);
+                    SendMessage(chat);
                 }
             }
         });
@@ -333,21 +447,33 @@ public class Main extends Application {
 
         menuExit.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
-                UserUpdate(self.getUsername(), "Offline");
+                self.setStatus("Offline");
+                UserUpdate(self);
                 System.exit(0);
             }
         });
         statusActive.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
-                UserUpdate(self.getUsername(), "Active");
+                self.setStatus("Active");
+                UserUpdate(self);
             }
         });
         statusBusy.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
-                UserUpdate(self.getUsername(), "Busy");
+                self.setStatus("Busy");
+                UserUpdate(self);
             }
         });
 
+    }
+
+    //Transfers packets to all connected users (ONLY CALLED IF HOST)
+    public void Relay(DataItem item, ClientConnections sentClient){
+        for(ClientConnections connection : allUserConnections){
+            if(sentClient != connection){
+                connection.SendData(item);
+            }
+        }
     }
 
 }

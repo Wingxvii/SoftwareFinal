@@ -2,7 +2,7 @@ package sample;
 
 
 //class that holds data for each sent chat data
-public class UserItem {
+public class UserItem extends DataItem{
     //username
     public String Username = "Nameless";
     //status
