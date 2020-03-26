@@ -12,6 +12,8 @@ public class UserItem extends DataItem{
     public UserItem(String Username, String Status) {
         this.Username = Username;
         this.Status = Status;
+        this.type = ItemType.USERITEM;
+
     }
 
     //accessors

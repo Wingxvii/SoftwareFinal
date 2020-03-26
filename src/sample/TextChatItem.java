@@ -13,6 +13,7 @@ public class TextChatItem extends ChatItem{
 
     TextChatItem(Node nodeItem, UserItem userParent) {
         super(nodeItem, userParent);
+        this.type = ItemType.CHATTEXT;
     }
 
     public void Setup(boolean self)

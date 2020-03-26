@@ -1,6 +1,8 @@
 package sample;
 
-public class DataItem {
+import java.io.Serializable;
+
+public class DataItem implements Serializable {
     public enum ItemType{
         USERITEM,
         CHATTEXT,
@@ -13,5 +15,6 @@ public class DataItem {
     public ItemType getType(){
         return type;
     }
+
 
 }

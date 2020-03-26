@@ -206,13 +206,16 @@ public class Main extends Application {
 
         Label usernameLabel = new Label("Username:");
         Label ipLabel = new Label("IP Address:");
+        Label connectionFailed = new Label("Connection Failed");
+        connectionFailed.setVisible(false);
+        connectionFailed.setTextFill(Color.RED);
 
-        CheckBox isHost = new CheckBox("Host");
+        CheckBox isHostButton = new CheckBox("Host");
 
         TextField usernameText = new TextField();
         TextField ipText = new TextField();
 
-        isHost.selectedProperty().addListener(new ChangeListener<Boolean>() {
+        isHostButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if(newValue){
@@ -231,31 +234,31 @@ public class Main extends Application {
         gridPane.add(ipLabel, 0,1);
         gridPane.add(usernameText, 1,0);
         gridPane.add(ipText, 1,1);
-        gridPane.add(isHost, 1,2);
+        gridPane.add(isHostButton, 1,2);
         gridPane.add(confirm,2,0);
-
-        Label connectionFailed = new Label("Connection Failed");
-        connectionFailed.setTextFill(Color.RED);
+        gridPane.add(connectionFailed,2,1 );
 
         confirm.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
 
                 boolean connection = false;
 
-                //TODO: check connection
+                //check connection
                 try {
-                    if(!isHost.isSelected()){
+                    if(!isHostButton.isSelected()){
                         //connect to the server
-                        Socket soc = new Socket(ipLabel.getText() , 6400);
+                        Socket soc = new Socket(ipText.getText() , 6654);
                         //create input and output streams
                         in = new ObjectInputStream(soc.getInputStream());
                         out = new ObjectOutputStream(soc.getOutputStream());
 
+                        //start a thread to process host data
                         new Thread(()-> {
                             while (true){
                                 try {
                                     DataItem newItem = (DataItem)in.readObject();
 
+                                    //schedule data process
                                     Platform.runLater(() -> {
                                         //process data
                                         switch (newItem.getType()) {
@@ -279,9 +282,9 @@ public class Main extends Application {
 
 
                         }).start();
-
-                    }else{
-                        ServerSocket soc = new ServerSocket(6400);
+                    }
+                    else{
+                        ServerSocket soc = new ServerSocket(6654);
                         //thread connection handler
                         new Thread(()-> {
                         while(true) {
@@ -302,6 +305,7 @@ public class Main extends Application {
                 }catch (IOException ex){
                     //set connection to be false
                     connection = false;
+                    System.out.println("Connection Failed");
                 }
 
                 if(connection){
@@ -314,13 +318,19 @@ public class Main extends Application {
 
                     self = new UserItem(usernameText.getText(), "Active");
                     allUsers.add(self);
+
+                    isHost = isHostButton.isSelected();
+
+                    if(!isHost){
+                        SendData(self);
+                    }
+
                     UpdateUserList();
                     connected = true;
                     enableFunctionality();
                     newWindow.close();
                 }else{
-                    gridPane.add(connectionFailed,2,1 );
-
+                    connectionFailed.setVisible(true);
                 }
 
             }
@@ -383,6 +393,20 @@ public class Main extends Application {
             public void handle(ActionEvent t) {
                 self.setStatus("Offline");
                 UserUpdate(self);
+                try {
+                    if(isHost){
+                        for(ClientConnections connection : allUserConnections){
+                            connection.getIn().close();
+                            connection.getOut().close();
+                            connection.getSock().close();
+                        }
+                    }else {
+                        in.close();
+                        out.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 System.exit(0);
             }
         });
@@ -401,19 +425,25 @@ public class Main extends Application {
 
     }
 
-    //region ClientFunctionality
-    //all functions called by clients
-    //TODO: Send message data to host
-    public void SendData(DataItem item){
-
-    }
-
-    //TODO: Call this for incomming messages
+    //process incomming messages
     public void RecieveMessage(TextChatItem chat){
         chat.Setup(false);
         items.add(chat);
 
         chatList.getChildren().add(chat.nodeItem);
+    }
+
+    //region ClientFunctionality
+    //all functions called by clients
+    //TODO: Send message data to host
+    public void SendData(DataItem item){
+        try {
+            out.writeObject(item);
+            out.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //Sets up and updates incoming user updates and connections
@@ -456,7 +486,7 @@ public class Main extends Application {
 
                 //data reception
                 while(true){
-                    DataItem newItem = (DataItem) in.readObject();
+                    DataItem newItem = (DataItem) connection.getIn().readObject();
 
                     //schedule process
                     Platform.runLater(() -> {
@@ -491,7 +521,13 @@ public class Main extends Application {
 
     //host targeted data send
     public void SendData(DataItem data, ClientConnections recipient){
+        try {
+            recipient.getOut().writeObject(data);
+            recipient.getOut().flush();
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //Transfers packets to all connected users except 1 (ONLY CALLED IF HOST)
@@ -530,7 +566,6 @@ public class Main extends Application {
             SendInitData(connection);
         }
     }
-
     //sends data logs to player
     public void SendInitData(ClientConnections connection){
         for(UserItem user :allUsers ){
@@ -540,7 +575,6 @@ public class Main extends Application {
             SendData(chat, connection);
         }
     }
-
 
     //endregion
 }
