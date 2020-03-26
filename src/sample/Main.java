@@ -104,7 +104,6 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-
         //setup format
         textInput.setMinSize(750,50);
         textInput.setFont(new Font(12));
@@ -409,7 +408,7 @@ public class Main extends Application {
 
                     try {
                             BufferedImage img = ImageIO.read(selectedFile);
-                            ImageChatItem chat = new ImageChatItem(img, self);
+                            ImageChatItem chat = new ImageChatItem(img,selectedFile.getName(),self);
                             items.add(chat);
 
                             chatList.getChildren().add(SetupImage(chat, true));
@@ -502,13 +501,33 @@ public class Main extends Application {
 
         return returnLabel;
     }
-    public ImageView SetupImage(ImageChatItem item, boolean self){
+    public BorderPane SetupImage(ImageChatItem item, boolean self){
         ImageView returnLabel = new ImageView();
         returnLabel.setImage(SwingFXUtils.toFXImage(item.getImage(), null));
         returnLabel.setPreserveRatio(true);
         returnLabel.setFitWidth(300);
 
-        return returnLabel;
+        BorderPane alignment = new BorderPane();
+        Label desc = new Label(item.getImageName());
+
+        desc.setFont(new Font(10));
+        desc.setMinWidth(600);
+        alignment.setBottom(desc);
+
+        if(self) {
+            alignment.setRight(returnLabel);
+            desc.setTextFill(Color.GREEN);
+            desc.setAlignment(Pos.BASELINE_RIGHT);
+            desc.setTextAlignment(TextAlignment.RIGHT);
+
+        }else {
+            alignment.setLeft(returnLabel);
+            desc.setTextFill(Color.BLUE);
+            desc.setAlignment(Pos.BASELINE_LEFT);
+            desc.setTextAlignment(TextAlignment.LEFT);
+        }
+
+        return alignment;
     }
 
     //region ClientFunctionality

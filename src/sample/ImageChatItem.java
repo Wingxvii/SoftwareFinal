@@ -10,11 +10,13 @@ import java.util.List;
 
 public class ImageChatItem extends ChatItem{
     transient BufferedImage image;
+    private String imageName;
 
-    ImageChatItem(BufferedImage image, UserItem userParent) {
+    ImageChatItem(BufferedImage image, String imageName, UserItem userParent) {
         super( userParent);
         this.type = ItemType.CHATIMAGE;
         this.image = image;
+        this.imageName = imageName;
     }
 
 
@@ -30,7 +32,9 @@ public class ImageChatItem extends ChatItem{
 
     public BufferedImage getImage(){
         return image;
-
+    }
+    public String getImageName(){
+        return imageName;
     }
 
 
