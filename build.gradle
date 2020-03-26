@@ -1,0 +1,35 @@
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+}
+apply plugin: 'java'
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+ext {
+    javaMainClass = "FinalProject.MainProject"
+}
+
+application {
+    mainClassName = javaMainClass
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+javafx {
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing']
+}
+
+task execute(type:JavaExec, dependsOn: 'classes'){
+    main = 'MainProject'
+    classpath = sourceSets.main.runtimeClasspath
+}
