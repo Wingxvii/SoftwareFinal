@@ -36,6 +36,16 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+/*
+Desc: Main UI class
+Author: John Wang, Victor Zheng
+Date: 3/26/2020
+*/
+
+
+
+public const int PORT = 6654;
+
 public class MainProject extends Application {
 
     //reference to self user item
@@ -177,7 +187,7 @@ public class MainProject extends Application {
         chatList.setSpacing(5);
         chatList.setPadding(new Insets(5));
 
-        //user table
+        //user table setup
         TableColumn<String,String> usernameDisplay = new TableColumn<>("Username");
         usernameDisplay.setCellValueFactory(new PropertyValueFactory<>("Username"));
         usernameDisplay.setResizable(false);
@@ -197,7 +207,7 @@ public class MainProject extends Application {
         userTable.setDisable(true);
         userTable.setStyle(windowStyles);
 
-        //save option
+        //setup save log option
         menuSave.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
                 //choose file to save to
@@ -248,7 +258,7 @@ public class MainProject extends Application {
             }
         });
 
-        //add everything
+        //add everything to masterpane
         statusMenu.getItems().addAll(statusActive,statusBusy);
         menuFile.getItems().addAll(menuSave,menuExit );
         menubar.getMenus().addAll(menuFile, statusMenu);
@@ -276,24 +286,27 @@ public class MainProject extends Application {
         SetupLogin();
     }
 
+    //main
     public static void main(String[] args) {
         launch(args);
     }
 
     //setup login window
     public void SetupLogin(){
-        // Setting up the field and text
+        // setup nodes
         Label usernameLabel = new Label("Username:");
         usernameLabel.setStyle(labelStyles);
 
         Label ipLabel = new Label("IP Address:");
         ipLabel.setStyle(labelStyles);
 
+        //input validation node
         Label connectionFailed = new Label("Connection Failed");
         connectionFailed.setStyle(labelStyles);
         connectionFailed.setVisible(false);
         connectionFailed.setStyle("-fx-text-fill: #ff7777;");
 
+        //ho9st check
         CheckBox isHostButton = new CheckBox("Host");
         isHostButton.setStyle(labelStyles);
         Tooltip.install(isHostButton, new Tooltip("Host the chatroom"));
@@ -301,6 +314,7 @@ public class MainProject extends Application {
         TextField usernameText = new TextField();
         TextField ipText = new TextField();
 
+        //disable ip if host
         isHostButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -313,6 +327,7 @@ public class MainProject extends Application {
             }
         });
 
+        //add to layout
         GridPane connectionInputs = new GridPane();
         connectionInputs.setPadding(new Insets(10,10,10,10));
         connectionInputs.setHgap(5);
@@ -324,19 +339,20 @@ public class MainProject extends Application {
         connectionInputs.add(isHostButton, 0,2);
         connectionInputs.add(connectionFailed,1,2 );
 
+        //connect button functionality
         Button connectButton = new Button("Connect");
         connectButton.setStyle(btStyles);
         connectButton.setMinSize(100, 55);
         connectButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-
                 boolean connection = false;
 
                 //check connection
                 try {
+                    //non-host setup
                     if(!isHostButton.isSelected()){
                         //connect to the server
-                        Socket soc = new Socket(ipText.getText() , 6654);
+                        Socket soc = new Socket(ipText.getText() , PORT);
                         //create input and output streams
                         in = new ObjectInputStream(soc.getInputStream());
                         out = new ObjectOutputStream(soc.getOutputStream());
@@ -376,19 +392,18 @@ public class MainProject extends Application {
 
                         }).start();
                     }
+                    //host setup
                     else{
-                        ServerSocket soc = new ServerSocket(6654);
+                        ServerSocket soc = new ServerSocket(PORT);
                         //thread connection handler
                         new Thread(()-> {
                         while(true) {
                             try {
                                 Socket client = soc.accept();
                                 HandleConnection(new ClientConnections(client));
-
                             } catch (IOException ex) {
                                 ex.printStackTrace();
                             }
-
                         }
                         }).start();
                     }
@@ -401,9 +416,9 @@ public class MainProject extends Application {
                     System.out.println("Connection Failed");
                 }
 
+                //enable chat program
                 if(connection){
-                    //TODO: setup initial chatroom data
-
+                    //setup initial chatroom data
                     if(usernameText.getText().isEmpty()){
                         usernameText.setText("Nameless");
                     }
@@ -411,8 +426,8 @@ public class MainProject extends Application {
                     self = new UserItem(usernameText.getText(), "Active");
                     allUsers.add(self);
 
+                    //check host
                     isHost = isHostButton.isSelected();
-
                     if(!isHost){
                         SendData(self);
                     }
@@ -457,6 +472,8 @@ public class MainProject extends Application {
 
     //enable functionality for connection
     public void enableFunctionality(){
+
+        //enable all nodes
         sendButton.setDisable(false);
         imageButton.setDisable(false);
         menuFile.setDisable(false);
@@ -466,6 +483,8 @@ public class MainProject extends Application {
         chatLog.setDisable(false);
 
         //setup functionality
+
+        //send button text submission
         sendButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 if(connected) {
@@ -484,7 +503,7 @@ public class MainProject extends Application {
             }
         });
 
-        //added enter submission
+        //enter text submission
         textInput.setOnKeyPressed(new EventHandler<KeyEvent>()
         {
             @Override
@@ -509,6 +528,7 @@ public class MainProject extends Application {
             }
         });
 
+        //image file chooser submission
         imageButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 if(connected) {
@@ -539,6 +559,7 @@ public class MainProject extends Application {
             }
         });
 
+        //exit setup
         menuExit.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
                 self.setStatus("Offline");
@@ -560,6 +581,8 @@ public class MainProject extends Application {
                 System.exit(0);
             }
         });
+
+        //status update active
         statusActive.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
                 self.setStatus("Active");
@@ -570,6 +593,8 @@ public class MainProject extends Application {
                 }
             }
         });
+
+        //status update busy
         statusBusy.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
                 self.setStatus("Busy");
@@ -580,7 +605,6 @@ public class MainProject extends Application {
                 }
             }
         });
-
     }
 
     //process incoming messages
@@ -597,7 +621,7 @@ public class MainProject extends Application {
         chatList.getChildren().add(SetupImage(chat, false));
     }
 
-
+    //setup text to be displayed
     public HBox SetupText (TextChatItem item, boolean self){
         Label returnLabel = new Label(item.getText());
         returnLabel.setStyle(labelStyles);
@@ -626,6 +650,7 @@ public class MainProject extends Application {
         return newBox;
     }
 
+    //setup an image to be displayed
     public BorderPane SetupImage(ImageChatItem item, boolean self){
         ImageView returnLabel = new ImageView();
         returnLabel.setImage(SwingFXUtils.toFXImage(item.getImage(), null));
@@ -656,10 +681,9 @@ public class MainProject extends Application {
                 }
             }
         });
-
         menu.getItems().addAll(save);
+        //call context menu
         returnLabel.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
-
             @Override
             public void handle(ContextMenuEvent event) {
 
@@ -667,6 +691,7 @@ public class MainProject extends Application {
             }
         });
 
+        //add image name
         Label returnLabel2 = new Label(item.getUserParent().getUsername() + ": " + item.getImageName());
         returnLabel2.setStyle("-fx-Font-Weight: BOLD;");
 
@@ -685,6 +710,7 @@ public class MainProject extends Application {
 
     //region ClientFunctionality
     //all functions called by clients
+    //Send message data to host
     public void SendData(DataItem item){
         try {
             out.writeObject(item);
@@ -724,8 +750,8 @@ public class MainProject extends Application {
     //handles connection of new clients
     public void HandleConnection(ClientConnections connection){
 
+        //adds to list of all connections
         allUserConnections.add(connection);
-
         //start a listening thread
         new Thread(()->{
             try{
@@ -750,14 +776,15 @@ public class MainProject extends Application {
                                 UserUpdate((UserItem) newItem, connection);
                                 break;
                             case CHATTEXT:
+                                //process text reception
                                 ReceiveMessage((TextChatItem) newItem);
                                 break;
                             case CHATIMAGE:
+                                //process image reception
                                 ReceiveImage((ImageChatItem) newItem);
                                 break;
                             default:
                                 break;
-
                         }
                     });
                 }
@@ -781,7 +808,6 @@ public class MainProject extends Application {
             e.printStackTrace();
         }
     }
-
     //Transfers packets to all connected users except 1 (ONLY CALLED IF HOST)
     public void Relay(DataItem item, ClientConnections sentClient){
         for(ClientConnections connection : allUserConnections){
@@ -796,7 +822,8 @@ public class MainProject extends Application {
             SendData(item, connection);
         }
     }
-    //host user update that checks for user initialization
+
+    //host user update that checks for user initialization and relays accepted user data
     public void UserUpdate(UserItem user, ClientConnections connection){
         boolean found = false;
 
@@ -818,7 +845,8 @@ public class MainProject extends Application {
             SendInitData(connection);
         }
     }
-    //sends data logs to player
+
+    //sends data logs to player on connect
     public void SendInitData(ClientConnections connection){
         for(UserItem user :allUsers ){
             SendData(user, connection);

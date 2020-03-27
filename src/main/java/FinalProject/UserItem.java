@@ -1,12 +1,16 @@
 package FinalProject;
 
+/*
+Desc: Class that holds data locally for each connected user
+Author: John Wang
+Date: 3/26/2020
+*/
 
-//class that holds data for each sent chat data
 public class UserItem extends DataItem{
     //username
-    public String Username = "Nameless";
+    private String Username = "Nameless";
     //status
-    public String Status = "Offline";
+    private String Status = "Offline";
 
     //constructor
     public UserItem(String Username, String Status) {
@@ -16,6 +20,7 @@ public class UserItem extends DataItem{
 
     }
 
+    //copy constructor for simple re-seralization
     public UserItem(UserItem copy){
         super((DataItem)copy);
         this.Username = copy.getUsername();
@@ -27,7 +32,6 @@ public class UserItem extends DataItem{
     public String getUsername() {
         return Username;
     }
-
     public String getStatus() {
         return Status;
     }
