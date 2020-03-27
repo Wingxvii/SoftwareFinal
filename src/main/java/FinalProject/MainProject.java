@@ -38,15 +38,14 @@ import java.util.ArrayList;
 
 /*
 Desc: Main UI class
-Author: John Wang, Victor Zheng
+Author: John Wang, Victor Zhang
 Date: 3/26/2020
 */
 
 
 
-public const int PORT = 6654;
-
 public class MainProject extends Application {
+    final int PORT = 6654;
 
     //reference to self user item
     UserItem self;
@@ -113,6 +112,7 @@ public class MainProject extends Application {
     // Styling presets
     String bgStyles =
             "-fx-background-color: rgba(30, 30, 80, 240);" +
+                    //"-fx-color: rgba(30,30,80,240);" +
                     "-fx-text-fill: #ffffff;"
             ;
 
@@ -141,7 +141,9 @@ public class MainProject extends Application {
             ;
 
     String textStyles =
-            "-fx-font-family: 'Arial';"
+            "-fx-font-family: 'Arial';"// +
+                    //"-fx-text-fill: #ffffff;" +
+                    //"-fx-fill-color: rgba(125, 125, 200, 150);"
             ;
 
     String windowStyles =
@@ -149,19 +151,38 @@ public class MainProject extends Application {
             "-fx-background-color: rgba(240, 240, 255, 255);"
             ;
 
+    String tableStyles =
+            "-fx-color: rgba(125, 125, 200, 10);" +
+            "-fx-font-weight: BOLD;" +
+            "-fx-text-fill: #000000;" +
+                    "-fx-font-size: 16px;"
+            ;
+
+    String menuStyles =
+            "-fx-font-family: 'Arial';" +
+            "-fx-background-color: rgba(150, 150, 200, 50);" +
+                    "-fx-font-weight: BOLD;" +
+                    "-fx-font-size: 16px;"
+            ;
+
+    VBox empty = new VBox();
+
     //endregion
 
     @Override
     public void start(Stage primaryStage) throws Exception{
 
         //setup format
+        empty.setStyle(bgStyles);
+        empty.getChildren().add(new Label(" "));
+
         textInput.setStyle(promptStyles);
         textInput.setMinSize(600,50);
         textInput.setPrefSize(600, 50);
         textInput.setPromptText("Send Message...");
         textInput.setWrapText(true);
         textInput.setDisable(true);
-        textInput.setStyle("-fx-border-radius: 10 10 10 10;");
+        textInput.setStyle(textStyles);
 
         sendButton.setStyle(btStyles);
         sendButton.setMinSize(100,50);
@@ -173,8 +194,8 @@ public class MainProject extends Application {
         imageButton.setDisable(true);
         Tooltip.install(imageButton, new Tooltip("Send Image File"));
 
-        chatLog.setStyle(bgStyles);
-        chatList.setStyle(bgStyles);
+        //chatLog.setStyle(bgStyles);
+        //chatList.setStyle(bgStyles);
         chatLog.setFitToHeight(true);
         chatLog.setDisable(true);
         //auto scroll to bottom
@@ -186,6 +207,7 @@ public class MainProject extends Application {
         });
         chatList.setSpacing(5);
         chatList.setPadding(new Insets(5));
+        //chatList.getChildren().add(new Label(" "));
 
         //user table setup
         TableColumn<String,String> usernameDisplay = new TableColumn<>("Username");
@@ -193,19 +215,21 @@ public class MainProject extends Application {
         usernameDisplay.setResizable(false);
         usernameDisplay.setReorderable(false);
         usernameDisplay.setSortable(false);
-        usernameDisplay.setPrefWidth(200);
+        usernameDisplay.setMinWidth(150);
+        usernameDisplay.setStyle(tableStyles);
 
         TableColumn<String,String> statusDisplay = new TableColumn<>("Status");
         statusDisplay.setCellValueFactory(new PropertyValueFactory<>("Status"));
         statusDisplay.setResizable(false);
         statusDisplay.setReorderable(false);
-        statusDisplay.setPrefWidth(50);
+        statusDisplay.setMinWidth(100);
+        statusDisplay.setStyle(tableStyles);
 
         userTable.getColumns().addAll(usernameDisplay, statusDisplay);
         userTable.getItems().add(self);
         userTable.setEditable(false);
         userTable.setDisable(true);
-        userTable.setStyle(windowStyles);
+        //userTable.setStyle("-fx-fill: #000088;");
 
         //setup save log option
         menuSave.setOnAction(new EventHandler<ActionEvent>() {
@@ -259,11 +283,12 @@ public class MainProject extends Application {
         });
 
         //add everything to masterpane
-        statusMenu.getItems().addAll(statusActive,statusBusy);
-        menuFile.getItems().addAll(menuSave,menuExit );
-        menubar.getMenus().addAll(menuFile, statusMenu);
+        menuFile.getItems().addAll(menuSave, menuExit);
         menuFile.setDisable(true);
+        statusMenu.getItems().addAll(statusActive, statusBusy);
         statusMenu.setDisable(true);
+        menubar.getMenus().addAll(menuFile, statusMenu);
+        menubar.setStyle(menuStyles);
 
         messageInput.getChildren().addAll(imageButton,textInput,sendButton);
         messageInput.setSpacing(5);
@@ -275,6 +300,7 @@ public class MainProject extends Application {
         masterPane.setLeft(userTable);
         masterPane.setCenter(chatLog);
         masterPane.setBottom(messageInput);
+        masterPane.setRight(empty);
         masterPane.setStyle(bgStyles);
 
         //Parent root = FXMLLoader.load(getClass().getResource(System.getProperty("user.dir") + "/src/main/resources/FinalProject.fxml"));
@@ -624,13 +650,13 @@ public class MainProject extends Application {
     //setup text to be displayed
     public HBox SetupText (TextChatItem item, boolean self){
         Label returnLabel = new Label(item.getText());
-        returnLabel.setStyle(labelStyles);
+        //returnLabel.setStyle(labelStyles);
         returnLabel.setAlignment(Pos.BASELINE_LEFT);
         returnLabel.setTextAlignment(TextAlignment.LEFT);
         returnLabel.setText(": " + (returnLabel).getText());
 
         Label returnLabel2 = new Label(item.getUserParent().getUsername());
-        returnLabel2.setStyle(labelStyles);
+        //returnLabel2.setStyle(labelStyles);
         returnLabel2.setStyle("-fx-Font-Weight: BOLD;");
 
         if(self) {
@@ -642,7 +668,7 @@ public class MainProject extends Application {
         }
 
         HBox newBox = new HBox();
-        newBox.setStyle(bgStyles);
+        //newBox.setStyle(bgStyles);
         newBox.setMinWidth(560);
         newBox.setAlignment(Pos.BASELINE_LEFT);
         newBox.getChildren().addAll(returnLabel2,returnLabel);
@@ -658,8 +684,9 @@ public class MainProject extends Application {
         returnLabel.setFitWidth(300);
         Tooltip.install(returnLabel, new Tooltip("Right Click to Save"));
 
+
         BorderPane alignment = new BorderPane();
-        alignment.setStyle(bgStyles);
+        //alignment.setStyle(bgStyles);
 
         //context menu for image saving
         ContextMenu menu = new ContextMenu();
@@ -702,7 +729,10 @@ public class MainProject extends Application {
         }
 
         alignment.setTop(returnLabel2);
+        alignment.setBottom(empty);
+        alignment.setCenter(empty);
         alignment.setLeft(returnLabel);
+        alignment.setRight(empty);
         returnLabel2.setTextAlignment(TextAlignment.LEFT);
 
         return alignment;
