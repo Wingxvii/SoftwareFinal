@@ -102,7 +102,9 @@ public class MainProject extends Application {
     //region Style
     // Styling presets
     String bgStyles =
-            "-fx-background-color: rgba(240, 255, 240, 20);";
+            "-fx-background-color: rgba(30, 30, 80, 240);" +
+                    "-fx-text-fill: #ffffff;"
+            ;
 
     String btStyles =
             "-fx-border-color: rgba(0, 0, 0, 0);" +
@@ -119,7 +121,8 @@ public class MainProject extends Application {
 
     String labelStyles =
             "-fx-font-family: 'Arial';" +
-                    "-fx-font-size: 12px;"
+                    "-fx-font-size: 12px;" +
+                    "-fx-text-fill: #ffffff;"
             ;
 
     String promptStyles =
@@ -133,7 +136,7 @@ public class MainProject extends Application {
 
     String windowStyles =
             "-fx-font-family: 'Arial';" +
-            "-fx-background-color: rgba(240, 240, 255, 10);"
+            "-fx-background-color: rgba(240, 240, 255, 255);"
             ;
 
     //endregion
@@ -160,7 +163,8 @@ public class MainProject extends Application {
         imageButton.setDisable(true);
         Tooltip.install(imageButton, new Tooltip("Send Image File"));
 
-        //chatLog.setStyle(windowStyles);
+        chatLog.setStyle(bgStyles);
+        chatList.setStyle(bgStyles);
         chatLog.setFitToHeight(true);
         chatLog.setDisable(true);
         //auto scroll to bottom
@@ -191,7 +195,7 @@ public class MainProject extends Application {
         userTable.getItems().add(self);
         userTable.setEditable(false);
         userTable.setDisable(true);
-        userTable.setStyle(textStyles);
+        userTable.setStyle(windowStyles);
 
         //save option
         menuSave.setOnAction(new EventHandler<ActionEvent>() {
@@ -288,7 +292,7 @@ public class MainProject extends Application {
         Label connectionFailed = new Label("Connection Failed");
         connectionFailed.setStyle(labelStyles);
         connectionFailed.setVisible(false);
-        connectionFailed.setTextFill(Color.RED);
+        connectionFailed.setStyle("-fx-text-fill: #ff7777;");
 
         CheckBox isHostButton = new CheckBox("Host");
         isHostButton.setStyle(labelStyles);
@@ -431,6 +435,7 @@ public class MainProject extends Application {
         connectGrid.add(connectButton, 0, 0);
 
         HBox connectionGrid = new HBox();
+        connectionGrid.setStyle(bgStyles);
         connectionGrid.setAlignment(Pos.CENTER);
         connectionGrid.getChildren().addAll(connectionInputs, connectGrid);
 
@@ -613,6 +618,7 @@ public class MainProject extends Application {
         }
 
         HBox newBox = new HBox();
+        newBox.setStyle(bgStyles);
         newBox.setMinWidth(560);
         newBox.setAlignment(Pos.BASELINE_LEFT);
         newBox.getChildren().addAll(returnLabel2,returnLabel);
@@ -628,6 +634,7 @@ public class MainProject extends Application {
         Tooltip.install(returnLabel, new Tooltip("Right Click to Save"));
 
         BorderPane alignment = new BorderPane();
+        alignment.setStyle(bgStyles);
 
         //context menu for image saving
         ContextMenu menu = new ContextMenu();
@@ -678,7 +685,6 @@ public class MainProject extends Application {
 
     //region ClientFunctionality
     //all functions called by clients
-    //TODO: Send message data to host
     public void SendData(DataItem item){
         try {
             out.writeObject(item);
