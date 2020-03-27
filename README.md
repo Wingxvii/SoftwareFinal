@@ -3,6 +3,7 @@ Group Members:
 John Wang - Wingxvii
 Contributions: 
 - UI and Menu Functionality and layout
+- UI Look and style
 - P2P socket networking and multithreading
 - Image transfer and seralization
 - Messager functionality
@@ -10,9 +11,8 @@ Contributions:
 
 Victor Zhang - Vzru
 Contributions: 
-- UI Look and style
 - Gradle
-- Debugging
+- UI Look and style
 
 Repo URL: https://github.com/Wingxvii/SoftwareFinal
 

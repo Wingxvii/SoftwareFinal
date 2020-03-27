@@ -79,7 +79,7 @@ set CMD_LINE_ARGS=%*
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%APP_HOME%\lib\Software_Final-1.0-SNAPSHOT.jar;%APP_HOME%\lib\javafx-swing-12.0.1-win.jar;%APP_HOME%\lib\javafx-fxml-12.0.1-win.jar;%APP_HOME%\lib\javafx-controls-12.0.1-win.jar;%APP_HOME%\lib\javafx-controls-12.0.1.jar;%APP_HOME%\lib\javafx-graphics-12.0.1-win.jar;%APP_HOME%\lib\javafx-graphics-12.0.1.jar;%APP_HOME%\lib\javafx-base-12.0.1-win.jar;%APP_HOME%\lib\javafx-base-12.0.1.jar
+set CLASSPATH=%APP_HOME%\lib\Software_Final-1.0.jar;%APP_HOME%\lib\javafx-swing-12.0.1-win.jar;%APP_HOME%\lib\javafx-fxml-12.0.1-win.jar;%APP_HOME%\lib\javafx-controls-12.0.1-win.jar;%APP_HOME%\lib\javafx-controls-12.0.1.jar;%APP_HOME%\lib\javafx-graphics-12.0.1-win.jar;%APP_HOME%\lib\javafx-graphics-12.0.1.jar;%APP_HOME%\lib\javafx-base-12.0.1-win.jar;%APP_HOME%\lib\javafx-base-12.0.1.jar
 
 @rem Execute Software_Final
 "%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %SOFTWARE_FINAL_OPTS%  -classpath "%CLASSPATH%" FinalProject.MainProject %CMD_LINE_ARGS%

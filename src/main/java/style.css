@@ -1,0 +1,69 @@
+.button:hover {
+    -fx-background-color:grey;
+    -fx-background-radius:0;
+    -fx-border-color:grey;
+    -fx-border-width: 0 3 3 0;
+    -fx-background-insets: 0;
+}
+.button {
+    -fx-background-color:lightgrey;
+    -fx-background-radius:0;
+    -fx-border-color:transparent;
+    -fx-border-width: 0 3 3 0;
+}
+
+.pane{
+    -fx-background-color:black;
+}
+.content-pane{
+    -fx-background-color:black;
+}
+
+.vbox{
+    -fx-background-color:black;
+}
+.hbox{
+    -fx-background-color:black;
+}
+
+.scroll-pane{
+    -fx-background-color:black;
+}
+
+.table-row-cell:odd {
+    -fx-text-fill: black;
+    -fx-background-color: darkgray;
+}
+
+.table-row-cell:even {
+    -fx-text-fill: black;
+    -fx-background-color: darkgray;
+}
+.table-view:focused{
+    -fx-background-color: black;
+}
+
+.table-view{
+   -fx-background-color: black;
+}
+
+.table-view .column-header-background{
+    -fx-background-color: darkslategray;
+    -fx-text-fill: black;
+}
+
+.table-view .column-header-background .label{
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+}
+
+.table-view .column-header {
+    -fx-background-color: black;
+}
+
+.table-view .table-cell{
+    -fx-text-fill: black;
+}
+.table-row-cell:selected {
+    -fx-background-color: darkgray;
+}

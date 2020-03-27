@@ -54,3 +54,12 @@ task (minify, dependsOn: 'jar', type:proguard.gradle.ProGuardTask) {
     injars 'build/libs/Project.jar'
     outjars 'build/libs/Project.min.jar'
 }
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ["src/main/java"]
+            includes = ["*.css"]
+        }
+    }
+}

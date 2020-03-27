@@ -2,17 +2,28 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="83270fdf-fa49-4275-a484-0b3fa3cb3cb8" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/SoftwareFinal.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1/fileContent/fileContent.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1/fileContent/fileContent.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1/javaCompile/classAnalysis.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1/javaCompile/javaCompile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1/javaCompile/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1/javaCompile/taskHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/md5-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/SoftwareFinal.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/FinalProject/ChatItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/FinalProject/ChatItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/FinalProject/ClientConnections.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/FinalProject/ClientConnections.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/FinalProject/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/FinalProject/Controller.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/FinalProject/DataItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/FinalProject/DataItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/FinalProject/ImageChatItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/FinalProject/ImageChatItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/FinalProject.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/scripts/Software_Final" beforeDir="false" afterPath="$PROJECT_DIR$/build/scripts/Software_Final" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/scripts/Software_Final.bat" beforeDir="false" afterPath="$PROJECT_DIR$/build/scripts/Software_Final.bat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/FinalProject/MainProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/FinalProject/MainProject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/FinalProject/TextChatItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/FinalProject/TextChatItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/FinalProject/UserItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/FinalProject/UserItem.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,6 +38,9 @@
   <component name="ExternalProjectsManager">
     <system id="GRADLE">
       <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
         <projects_view>
           <tree_state>
             <expand />
@@ -55,7 +69,13 @@
       <recent name="C:\Vzr\Repos\SoftwareFinal\src" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.MainProject">
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="gradle assemble" />
+      <command value="gradle run" />
+    </option>
+  </component>
+  <component name="RunManager" selected="Gradle.SoftwareFinal [run]">
     <configuration name="MainProject" type="Application" factoryName="Application" singleton="false" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="FinalProject.MainProject" />
       <module name="Gradle_Build.main" />
@@ -69,21 +89,59 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Software_Final [execute]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="C:/Users/turnt/OneDrive/Documents/Java/SoftwareFinal [run]" type="GradleRunConfiguration" factoryName="Gradle" singleton="false" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
+        <option name="scriptParameters" value="" />
         <option name="taskDescriptions">
           <list />
         </option>
         <option name="taskNames">
           <list>
-            <option value="execute" />
+            <option value="run" />
           </list>
         </option>
-        <option name="vmOptions" />
+        <option name="vmOptions" value="" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="SoftwareFinal [assemble]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="assemble" />
+          </list>
+        </option>
+        <option name="vmOptions" value="" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="SoftwareFinal [run]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="run" />
+          </list>
+        </option>
+        <option name="vmOptions" value="" />
       </ExternalSystemSettings>
       <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
       <method v="2" />
@@ -105,11 +163,20 @@
       <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Application.MainProject" />
+      <item itemvalue="Gradle.C:/Users/turnt/OneDrive/Documents/Java/SoftwareFinal [run]" />
+      <item itemvalue="Gradle.Software_Final" />
+      <item itemvalue="Gradle.SoftwareFinal [assemble]" />
+      <item itemvalue="Gradle.SoftwareFinal [run]" />
+    </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.SoftwareFinal [run]" />
+        <item itemvalue="Gradle.C:/Users/turnt/OneDrive/Documents/Java/SoftwareFinal [run]" />
+        <item itemvalue="Gradle.SoftwareFinal [assemble]" />
         <item itemvalue="Application.MainProject" />
         <item itemvalue="Gradle.Software_Final" />
-        <item itemvalue="Gradle.Software_Final [execute]" />
       </list>
     </recent_temporary>
   </component>
@@ -143,33 +210,58 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="677" y="179" key="#MainProject/0.0.1920.1040@0.0.1920.1040" timestamp="1585231329766" />
-    <state x="414" y="176" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1585232114640">
+    <state x="414" y="176" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1585277212985">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
+    <state x="414" y="176" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585277212985" />
     <state x="414" y="176" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1585232114640" />
-    <state width="1877" height="281" key="GridCell.Tab.0.bottom" timestamp="1585230458133">
+    <state width="1877" height="348" key="GridCell.Tab.0.bottom" timestamp="1585280443699">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
+    <state width="1877" height="348" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585280443699" />
     <state width="1877" height="281" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1585230458133" />
-    <state width="1877" height="281" key="GridCell.Tab.0.center" timestamp="1585230458133">
+    <state width="1877" height="348" key="GridCell.Tab.0.center" timestamp="1585280443699">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
+    <state width="1877" height="348" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585280443699" />
     <state width="1877" height="281" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1585230458133" />
-    <state width="1877" height="281" key="GridCell.Tab.0.left" timestamp="1585230458133">
+    <state width="1877" height="348" key="GridCell.Tab.0.left" timestamp="1585280443699">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
+    <state width="1877" height="348" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585280443699" />
     <state width="1877" height="281" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1585230458133" />
-    <state width="1877" height="281" key="GridCell.Tab.0.right" timestamp="1585230458133">
+    <state width="1877" height="348" key="GridCell.Tab.0.right" timestamp="1585280443699">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
+    <state width="1877" height="348" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585280443699" />
     <state width="1877" height="281" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1585230458133" />
-    <state x="655" y="345" key="com.intellij.ide.util.TipDialog" timestamp="1585266479358">
+    <state width="1877" height="348" key="GridCell.Tab.1.bottom" timestamp="1585280443699">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="655" y="345" key="com.intellij.ide.util.TipDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585266479358" />
+    <state width="1877" height="348" key="GridCell.Tab.1.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585280443699" />
+    <state width="1877" height="348" key="GridCell.Tab.1.center" timestamp="1585280443699">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.1.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585280443699" />
+    <state width="1877" height="348" key="GridCell.Tab.1.left" timestamp="1585280443699">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.1.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585280443699" />
+    <state width="1877" height="348" key="GridCell.Tab.1.right" timestamp="1585280443699">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.1.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585280443699" />
+    <state x="655" y="345" key="com.intellij.ide.util.TipDialog" timestamp="1585277365957">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="655" y="345" key="com.intellij.ide.util.TipDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585277365957" />
     <state x="342" y="133" key="new project wizard" timestamp="1585233370780">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="342" y="133" key="new project wizard/0.0.1920.1040@0.0.1920.1040" timestamp="1585233370780" />
+    <state x="616" y="240" width="672" height="677" key="run.anything.popup" timestamp="1585278748303">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="616" y="240" width="672" height="677" key="run.anything.popup/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585278748303" />
   </component>
 </project>

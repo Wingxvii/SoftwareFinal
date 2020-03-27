@@ -28,6 +28,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.scene.text.Font;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -43,10 +44,8 @@ Date: 3/26/2020
 */
 
 
-
-public const int PORT = 6654;
-
 public class MainProject extends Application {
+    final int PORT = 6654;
 
     //reference to self user item
     UserItem self;
@@ -109,68 +108,27 @@ public class MainProject extends Application {
     ObjectOutputStream out = null;
     //endregion
 
-    //region Style
-    // Styling presets
-    String bgStyles =
-            "-fx-background-color: rgba(240, 255, 240, 20);";
-
-    String btStyles =
-            "-fx-border-color: rgba(0, 0, 0, 0);" +
-            "-fx-border-width: 1px;" +
-            //"-fx-border-radius: 10;" +
-            "-fx-background-color: #7777ff;" +
-            "-fx-text-fill: rgba(230, 230, 230, 255);" +
-            "-fx-font-family: 'Arial';" +
-            "-fx-font-weight: BOLD;" +
-            "-fx-font-size: 16px;" +
-            "-fx-background-radius: 10;" +
-            "-fx-padding: 10 10 10 10;"
-            ;
-
-    String labelStyles =
-            "-fx-font-family: 'Arial';" +
-                    "-fx-font-size: 12px;"
-            ;
-
-    String promptStyles =
-            "-fx-font-family: 'Arial';" +
-                    "-fx-font-size: 16px;"
-            ;
-
-    String textStyles =
-            "-fx-font-family: 'Arial';"
-            ;
-
-    String windowStyles =
-            "-fx-font-family: 'Arial';" +
-            "-fx-background-color: rgba(240, 240, 255, 10);"
-            ;
-
-    //endregion
-
     @Override
     public void start(Stage primaryStage) throws Exception{
 
+        //style
+        masterScene.getStylesheets().add("style.css");
+
         //setup format
-        textInput.setStyle(promptStyles);
         textInput.setMinSize(600,50);
         textInput.setPrefSize(600, 50);
         textInput.setPromptText("Send Message...");
         textInput.setWrapText(true);
         textInput.setDisable(true);
-        textInput.setStyle("-fx-border-radius: 10 10 10 10;");
 
-        sendButton.setStyle(btStyles);
         sendButton.setMinSize(100,50);
         sendButton.setDisable(true);
         Tooltip.install(sendButton, new Tooltip("Send Message"));
 
-        imageButton.setStyle(btStyles);
         imageButton.setMinSize(120,50);
         imageButton.setDisable(true);
         Tooltip.install(imageButton, new Tooltip("Send Image File"));
 
-        //chatLog.setStyle(windowStyles);
         chatLog.setFitToHeight(true);
         chatLog.setDisable(true);
         //auto scroll to bottom
@@ -201,7 +159,6 @@ public class MainProject extends Application {
         userTable.getItems().add(self);
         userTable.setEditable(false);
         userTable.setDisable(true);
-        userTable.setStyle(textStyles);
 
         //setup save log option
         menuSave.setOnAction(new EventHandler<ActionEvent>() {
@@ -271,7 +228,6 @@ public class MainProject extends Application {
         masterPane.setLeft(userTable);
         masterPane.setCenter(chatLog);
         masterPane.setBottom(messageInput);
-        masterPane.setStyle(bgStyles);
 
         //Parent root = FXMLLoader.load(getClass().getResource(System.getProperty("user.dir") + "/src/main/resources/FinalProject.fxml"));
         primaryStage.setTitle("Chat");
@@ -291,20 +247,16 @@ public class MainProject extends Application {
     public void SetupLogin(){
         // setup nodes
         Label usernameLabel = new Label("Username:");
-        usernameLabel.setStyle(labelStyles);
 
         Label ipLabel = new Label("IP Address:");
-        ipLabel.setStyle(labelStyles);
 
         //input validation node
         Label connectionFailed = new Label("Connection Failed");
-        connectionFailed.setStyle(labelStyles);
         connectionFailed.setVisible(false);
         connectionFailed.setTextFill(Color.RED);
 
         //ho9st check
         CheckBox isHostButton = new CheckBox("Host");
-        isHostButton.setStyle(labelStyles);
         Tooltip.install(isHostButton, new Tooltip("Host the chatroom"));
 
         TextField usernameText = new TextField();
@@ -337,7 +289,7 @@ public class MainProject extends Application {
 
         //connect button functionality
         Button connectButton = new Button("Connect");
-        connectButton.setStyle(btStyles);
+
         connectButton.setMinSize(100, 55);
         connectButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
@@ -451,6 +403,8 @@ public class MainProject extends Application {
 
         //open connection window
         Scene secondScene = new Scene(connectionGrid, 400, 110);
+        secondScene.getStylesheets().add("style.css");
+
 
         newWindow.setTitle("Connection");
         newWindow.setScene(secondScene);
@@ -616,49 +570,62 @@ public class MainProject extends Application {
         chatList.getChildren().add(SetupImage(chat, false));
     }
 
-    //setup text to be displayed
+    //sets up text element to be displayed in chat log
     public HBox SetupText (TextChatItem item, boolean self){
-        Label returnLabel = new Label(item.getText());
-        returnLabel.setStyle(labelStyles);
-        returnLabel.setAlignment(Pos.BASELINE_LEFT);
-        returnLabel.setTextAlignment(TextAlignment.LEFT);
-        returnLabel.setText(": " + (returnLabel).getText());
+        HBox newBox = new HBox();
 
+        Label returnLabel = new Label(item.getText());
         Label returnLabel2 = new Label(item.getUserParent().getUsername());
-        returnLabel2.setStyle(labelStyles);
-        returnLabel2.setStyle("-fx-Font-Weight: BOLD;");
+
+        returnLabel.setFont(new Font(18));
+        returnLabel2.setFont(new Font(21));
+        newBox.setMinWidth(575);
 
         if(self) {
+            returnLabel.setAlignment(Pos.BASELINE_RIGHT);
+            returnLabel.setTextAlignment(TextAlignment.RIGHT);
+            newBox.setAlignment(Pos.BASELINE_RIGHT);
+
+            returnLabel.setText((returnLabel).getText() + " :");
+            newBox.getChildren().addAll(returnLabel, returnLabel2);
             returnLabel.setTextFill(Color.GREEN);
             returnLabel2.setTextFill(Color.GREEN);
-        }else{
-            returnLabel.setTextFill(Color.BLUE);
-            returnLabel2.setTextFill(Color.BLUE);
-        }
 
-        HBox newBox = new HBox();
-        newBox.setMinWidth(560);
-        newBox.setAlignment(Pos.BASELINE_LEFT);
-        newBox.getChildren().addAll(returnLabel2,returnLabel);
+        }else{
+            returnLabel.setAlignment(Pos.BASELINE_LEFT);
+            returnLabel.setTextAlignment(TextAlignment.LEFT);
+            newBox.setAlignment(Pos.BASELINE_LEFT);
+
+            returnLabel.setText(": " + returnLabel.getText());
+            newBox.getChildren().addAll(returnLabel2,returnLabel);
+            returnLabel2.setTextFill(Color.BLUE);
+            returnLabel.setTextFill(Color.BLUE);
+
+        }
 
         return newBox;
     }
 
-    //setup an image to be displayed
+    //sets up image to be displayed in chatbox
     public BorderPane SetupImage(ImageChatItem item, boolean self){
         ImageView returnLabel = new ImageView();
         returnLabel.setImage(SwingFXUtils.toFXImage(item.getImage(), null));
         returnLabel.setPreserveRatio(true);
         returnLabel.setFitWidth(300);
-        Tooltip.install(returnLabel, new Tooltip("Right Click to Save"));
 
         BorderPane alignment = new BorderPane();
+        Label desc = new Label(item.getImageName());
+
+        desc.setFont(new Font(10));
+        desc.setMinWidth(600);
+        alignment.setBottom(desc);
 
         //context menu for image saving
         ContextMenu menu = new ContextMenu();
 
         MenuItem save = new MenuItem("Save Image");
         save.setOnAction(new EventHandler<ActionEvent>() {
+
             @Override
             public void handle(ActionEvent event) {
                 //save
@@ -672,11 +639,13 @@ public class MainProject extends Application {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
             }
         });
+
         menu.getItems().addAll(save);
-        //call context menu
         returnLabel.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
+
             @Override
             public void handle(ContextMenuEvent event) {
 
@@ -684,23 +653,21 @@ public class MainProject extends Application {
             }
         });
 
-        //add image name
-        Label returnLabel2 = new Label(item.getUserParent().getUsername() + ": " + item.getImageName());
-        returnLabel2.setStyle("-fx-Font-Weight: BOLD;");
-
         if(self) {
-            returnLabel2.setTextFill(Color.GREEN);
-        }else {
-            returnLabel2.setTextFill(Color.BLUE);
-        }
+            alignment.setRight(returnLabel);
+            desc.setTextFill(Color.GREEN);
+            desc.setAlignment(Pos.BASELINE_RIGHT);
+            desc.setTextAlignment(TextAlignment.RIGHT);
 
-        alignment.setTop(returnLabel2);
-        alignment.setLeft(returnLabel);
-        returnLabel2.setTextAlignment(TextAlignment.LEFT);
+        }else {
+            alignment.setLeft(returnLabel);
+            desc.setTextFill(Color.BLUE);
+            desc.setAlignment(Pos.BASELINE_LEFT);
+            desc.setTextAlignment(TextAlignment.LEFT);
+        }
 
         return alignment;
     }
-
     //region ClientFunctionality
     //all functions called by clients
     //Send message data to host
